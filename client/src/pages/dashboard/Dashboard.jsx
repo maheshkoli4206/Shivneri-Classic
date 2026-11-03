@@ -10,6 +10,7 @@ import {
   Database,
   Receipt,
   Users,
+  Calendar,
   Globe,
   Clock,
   ArrowRight
@@ -64,10 +65,18 @@ const Dashboard = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/residents"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Users className="w-3.5 h-3.5 text-orange-400" />
+              <span>{t('navResidents')}</span>
+            </Link>
+
+            <Link
+              to="/maintenance"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 transition-colors"
             >
-              <Users className="w-3.5 h-3.5" />
-              <span>{t('navResidents')}</span>
+              <Calendar className="w-3.5 h-3.5" />
+              <span>{t('navMaintenance')}</span>
             </Link>
 
             <button
@@ -126,28 +135,55 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Quick Access Card: Resident Master Registry */}
-        <div className="bg-gradient-to-r from-orange-950/30 via-slate-900 to-slate-900 border border-orange-500/30 rounded-2xl p-6 mb-8 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/30">
-              <Users className="w-6 h-6" />
+        {/* Operational Modules Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+          {/* Quick Access Card: Resident Master Registry */}
+          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-6 shadow-lg flex flex-col justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
+                <Users className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">
+                  {t('residentsTitle')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  १६ मूळ सभासदांची अधिकृत यादी, सदनिका क्रमांक व संपर्क माहिती व्यवस्थापित करा.
+                </p>
+              </div>
             </div>
-            <div>
-              <h3 className="text-base sm:text-lg font-bold text-white">
-                {t('residentsTitle')}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
-                १६ मूळ सभासदांची अधिकृत यादी, सदनिका क्रमांक व संपर्क माहिती व्यवस्थापित करा.
-              </p>
-            </div>
+            <Link
+              to="/residents"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
+            >
+              <span>सभासद यादी उघडा</span>
+              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+            </Link>
           </div>
-          <Link
-            to="/residents"
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-md shadow-orange-600/30 transition-all self-stretch sm:self-auto justify-center"
-          >
-            <span>सभासद यादी पहा</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+
+          {/* Quick Access Card: Monthly Maintenance Engine */}
+          <div className="bg-gradient-to-r from-orange-950/25 via-slate-900 to-slate-850 border border-orange-500/30 rounded-2xl p-6 shadow-lg flex flex-col justify-between gap-4">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/35 shrink-0">
+                <Calendar className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">
+                  {t('maintenanceTitle')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  मासिक देखभाल दर निश्चित करा, देयके तयार करा आणि देयक नोंदवही तपासा.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/maintenance"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-md shadow-orange-600/30 transition-all self-start"
+            >
+              <span>मासिक देखभाल व्यवस्थापन</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
 
         {/* System Status Grid */}

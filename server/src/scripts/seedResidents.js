@@ -90,3 +90,4 @@ if (process.argv[1]?.endsWith('seedResidents.js')) {
 }
 
 export default seedResidents;
+

@@ -6,6 +6,7 @@ import ProtectedRoute from './components/layout/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import ResidentList from './pages/residents/ResidentList';
+import MaintenanceManagement from './pages/maintenance/MaintenanceManagement';
 
 function App() {
   return (
@@ -32,6 +33,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ResidentList />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Monthly Maintenance Engine Route */}
+            <Route
+              path="/maintenance"
+              element={
+                <ProtectedRoute>
+                  <MaintenanceManagement />
                 </ProtectedRoute>
               }
             />

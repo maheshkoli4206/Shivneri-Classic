@@ -941,3 +941,4 @@ const ResidentList = () => {
 };
 
 export default ResidentList;
+

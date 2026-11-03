@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import residentRoutes from './routes/residentRoutes.js';
+import maintenanceRoutes from './routes/maintenanceRoutes.js';
 import verifyCsrfHeader from './middleware/csrfMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -51,6 +52,7 @@ app.use('/api', verifyCsrfHeader);
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/residents', residentRoutes);
+app.use('/api/v1/maintenance', maintenanceRoutes);
 
 // Root route
 app.get('/', (req, res) => {

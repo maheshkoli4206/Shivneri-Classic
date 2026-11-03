@@ -74,3 +74,4 @@ residentSchema.index(
 const Resident = mongoose.model('Resident', residentSchema);
 
 export default Resident;
+

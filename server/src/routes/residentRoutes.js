@@ -44,3 +44,4 @@ router.put('/:id', residentValidation, updateResident);
 router.patch('/:id/status', updateResidentStatus);
 
 export default router;
+

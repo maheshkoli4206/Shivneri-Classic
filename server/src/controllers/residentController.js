@@ -285,3 +285,4 @@ export const updateResidentStatus = async (req, res) => {
     });
   }
 };
+
