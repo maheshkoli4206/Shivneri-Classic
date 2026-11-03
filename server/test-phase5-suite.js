@@ -87,7 +87,7 @@ async function runPhase5TestSuite() {
       method: 'PUT',
       headers: authHeaders,
       body: JSON.stringify({
-        defaultMonthlyAmount: 1500,
+        defaultMonthlyAmount: 1000,
         dueDay: 10,
         lateFeeEnabled: false,
         lateFeeAmount: 0
@@ -97,7 +97,7 @@ async function runPhase5TestSuite() {
     const test2Pass =
       configRes.status === 200 &&
       configData.success &&
-      configData.config?.defaultMonthlyAmount === 1500 &&
+      configData.config?.defaultMonthlyAmount === 1000 &&
       configData.config?.isConfigured === true;
     testResults.push({
       id: 2,
@@ -420,7 +420,7 @@ async function runPhase5TestSuite() {
     const test16Pass =
       summaryRes.status === 200 &&
       summaryData.success &&
-      summaryData.summary?.totalBilledAmount === 16 * 1500 &&
+      summaryData.summary?.totalBilledAmount === 16 * 1000 &&
       summaryData.summary?.totalBillsCount === 16;
     testResults.push({
       id: 16,
