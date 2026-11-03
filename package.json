@@ -10,6 +10,7 @@
     "server": "npm --prefix server run dev",
     "server:start": "npm --prefix server run start",
     "seed:admin": "npm --prefix server run seed:admin",
+    "seed:residents": "npm --prefix server run seed:residents",
     "build": "npm --prefix client run build",
     "test": "node -e \"console.log('Project configuration verified: ok')\""
   },

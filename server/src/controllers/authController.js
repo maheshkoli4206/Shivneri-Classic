@@ -1,6 +1,10 @@
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 import { validationResult } from 'express-validator';
 import Admin from '../models/Admin.js';
+
+// Pre-computed valid 12-round bcrypt hash for constant-time comparisons on non-existent usernames
+const DUMMY_BCRYPT_HASH = '$2b$12$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy';
 
 /**
  * Helper to compute cookie options based on environment
@@ -18,7 +22,7 @@ export const getCookieOptions = () => {
 
 /**
  * POST /api/v1/auth/login
- * Admin Login Endpoint
+ * Admin Login Endpoint with Timing Attack Protection & Generic Failure Messages
  */
 export const login = async (req, res) => {
   try {
@@ -38,8 +42,9 @@ export const login = async (req, res) => {
     // Find sole Super Admin by username
     const admin = await Admin.findOne({ username: normalizedUsername });
 
-    // Timing-safe / generic failure response to prevent username enumeration
+    // Timing-safe defense: run dummy bcrypt comparison when username does not exist
     if (!admin) {
+      await bcrypt.compare(password, DUMMY_BCRYPT_HASH);
       return res.status(401).json({
         success: false,
         message: 'अवैध वापरकर्तानाव किंवा पासवर्ड (Invalid username or password)'
@@ -137,4 +142,3 @@ export const getMe = async (req, res) => {
     });
   }
 };
-

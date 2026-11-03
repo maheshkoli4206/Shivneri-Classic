@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
+import ResidentList from './pages/residents/ResidentList';
 
 function App() {
   return (
@@ -21,6 +22,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Resident Registry Route */}
+            <Route
+              path="/residents"
+              element={
+                <ProtectedRoute>
+                  <ResidentList />
                 </ProtectedRoute>
               }
             />

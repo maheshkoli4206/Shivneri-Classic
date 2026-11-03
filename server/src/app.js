@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import residentRoutes from './routes/residentRoutes.js';
 import verifyCsrfHeader from './middleware/csrfMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -43,12 +44,13 @@ const apiLimiter = rateLimit({
 
 app.use('/api', apiLimiter);
 
-// Anti-CSRF Header Check on mutating requests
+// Anti-CSRF Header & Origin Check on mutating requests
 app.use('/api', verifyCsrfHeader);
 
 // API Routes
 app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/residents', residentRoutes);
 
 // Root route
 app.get('/', (req, res) => {
