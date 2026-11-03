@@ -13,6 +13,7 @@ import {
   Calendar,
   CreditCard,
   Wallet,
+  BarChart3,
   Globe,
   Clock,
   ArrowRight
@@ -91,10 +92,18 @@ const Dashboard = () => {
 
             <Link
               to="/expenses"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Wallet className="w-3.5 h-3.5 text-orange-400" />
+              <span>{t('navExpenses')}</span>
+            </Link>
+
+            <Link
+              to="/reports"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 transition-colors"
             >
-              <Wallet className="w-3.5 h-3.5" />
-              <span>{t('navExpenses')}</span>
+              <BarChart3 className="w-3.5 h-3.5" />
+              <span>{t('navReports')}</span>
             </Link>
 
             <button
@@ -154,7 +163,7 @@ const Dashboard = () => {
         </div>
 
         {/* Operational Modules Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {/* Quick Access Card: Resident Master Registry */}
           <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
             <div className="flex items-start gap-3.5">
@@ -228,9 +237,9 @@ const Dashboard = () => {
           </div>
 
           {/* Quick Access Card: Expenses & Cashbook Management */}
-          <div className="bg-gradient-to-r from-orange-950/25 via-slate-900 to-slate-850 border border-orange-500/30 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/35 shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
@@ -244,9 +253,33 @@ const Dashboard = () => {
             </div>
             <Link
               to="/expenses"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-md shadow-orange-600/30 transition-all self-start"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
             >
               <span>खर्च व कॅशबुक उघडा</span>
+              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+            </Link>
+          </div>
+
+          {/* Quick Access Card: Reports & Financial Analytics */}
+          <div className="bg-gradient-to-r from-orange-950/25 via-slate-900 to-slate-850 border border-orange-500/30 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-11 h-11 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/35 shrink-0">
+                <BarChart3 className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">
+                  {t('reportsTitle')}
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  वित्तीय ताळेबंद, आलेख, एक्सेल आणि पीडीएफ ऑडिट अहवाल डाउनलोड करा.
+                </p>
+              </div>
+            </div>
+            <Link
+              to="/reports"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-md shadow-orange-600/30 transition-all self-start"
+            >
+              <span>अहवाल व विश्लेषण उघडा</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

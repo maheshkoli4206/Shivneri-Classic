@@ -261,3 +261,4 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
 };
 
 export default ExpenseDetailModal;
+

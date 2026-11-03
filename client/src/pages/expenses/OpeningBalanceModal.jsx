@@ -214,3 +214,4 @@ const OpeningBalanceModal = ({ isOpen, onClose, onSuccess }) => {
 };
 
 export default OpeningBalanceModal;
+

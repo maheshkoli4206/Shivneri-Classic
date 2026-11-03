@@ -25,7 +25,8 @@ import {
   FileText,
   Calendar,
   CreditCard,
-  Wallet
+  Wallet,
+  BarChart3
 } from 'lucide-react';
 
 const ResidentList = () => {
@@ -271,6 +272,14 @@ const ResidentList = () => {
               <span className="hidden sm:inline">{t('navExpenses')}</span>
             </Link>
 
+            <Link
+              to="/reports"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navReports')}</span>
+            </Link>
+
             <button
               onClick={toggleLanguage}
               type="button"
@@ -368,11 +377,10 @@ const ResidentList = () => {
                 key={f}
                 type="button"
                 onClick={() => setStatusFilter(f)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                  statusFilter === f
-                    ? 'bg-orange-600 text-white font-semibold'
-                    : 'bg-slate-800 text-slate-400 hover:text-slate-200'
-                }`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${statusFilter === f
+                  ? 'bg-orange-600 text-white font-semibold'
+                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                  }`}
               >
                 {f === 'ALL' ? t('filterAll') : f === 'ACTIVE' ? t('filterActive') : t('filterInactive')}
               </button>
@@ -445,11 +453,10 @@ const ResidentList = () => {
                       </td>
                       <td className="py-3 px-4 text-center">
                         <span
-                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-                            r.status === 'ACTIVE'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                              : 'bg-slate-800 text-slate-400 border-slate-700'
-                          }`}
+                          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${r.status === 'ACTIVE'
+                            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                            : 'bg-slate-800 text-slate-400 border-slate-700'
+                            }`}
                         >
                           {r.status === 'ACTIVE' ? (
                             <CheckCircle2 className="w-3 h-3 text-emerald-400" />
@@ -480,11 +487,10 @@ const ResidentList = () => {
                           <button
                             onClick={() => handleOpenStatusConfirm(r)}
                             type="button"
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              r.status === 'ACTIVE'
-                                ? 'bg-red-950/40 hover:bg-red-900/50 text-red-400'
-                                : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-400'
-                            }`}
+                            className={`p-1.5 rounded-lg transition-colors ${r.status === 'ACTIVE'
+                              ? 'bg-red-950/40 hover:bg-red-900/50 text-red-400'
+                              : 'bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-400'
+                              }`}
                             title={r.status === 'ACTIVE' ? t('btnDeactivate') : t('btnActivate')}
                           >
                             <Power className="w-3.5 h-3.5" />
@@ -827,11 +833,10 @@ const ResidentList = () => {
                   {selectedResident.fullNameMarathi}
                 </h3>
                 <span
-                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold mt-0.5 ${
-                    selectedResident.status === 'ACTIVE'
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                      : 'bg-slate-800 text-slate-400 border border-slate-700'
-                  }`}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold mt-0.5 ${selectedResident.status === 'ACTIVE'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    : 'bg-slate-800 text-slate-400 border border-slate-700'
+                    }`}
                 >
                   {selectedResident.status === 'ACTIVE'
                     ? t('statusActive')
@@ -912,11 +917,10 @@ const ResidentList = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center">
             <div
-              className={`w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 ${
-                selectedResident.status === 'ACTIVE'
-                  ? 'bg-red-950/60 text-red-400 border border-red-800/50'
-                  : 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50'
-              }`}
+              className={`w-12 h-12 rounded-full mx-auto flex items-center justify-center mb-3 ${selectedResident.status === 'ACTIVE'
+                ? 'bg-red-950/60 text-red-400 border border-red-800/50'
+                : 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50'
+                }`}
             >
               <Power className="w-6 h-6" />
             </div>
@@ -942,17 +946,16 @@ const ResidentList = () => {
                 type="button"
                 disabled={formSubmitting}
                 onClick={handleToggleStatus}
-                className={`px-4 py-2 rounded-xl font-semibold text-xs text-white ${
-                  selectedResident.status === 'ACTIVE'
-                    ? 'bg-red-600 hover:bg-red-500'
-                    : 'bg-emerald-600 hover:bg-emerald-500'
-                }`}
+                className={`px-4 py-2 rounded-xl font-semibold text-xs text-white ${selectedResident.status === 'ACTIVE'
+                  ? 'bg-red-600 hover:bg-red-500'
+                  : 'bg-emerald-600 hover:bg-emerald-500'
+                  }`}
               >
                 {formSubmitting
                   ? t('btnSaving')
                   : selectedResident.status === 'ACTIVE'
-                  ? t('btnDeactivate')
-                  : t('btnActivate')}
+                    ? t('btnDeactivate')
+                    : t('btnActivate')}
               </button>
             </div>
           </div>

@@ -25,6 +25,7 @@ import {
   Eye,
   CreditCard,
   Wallet,
+  BarChart3,
   X
 } from 'lucide-react';
 
@@ -291,6 +292,14 @@ const MaintenanceManagement = () => {
             >
               <Wallet className="w-3.5 h-3.5 text-slate-400" />
               <span className="hidden sm:inline">{t('navExpenses')}</span>
+            </Link>
+
+            <Link
+              to="/reports"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navReports')}</span>
             </Link>
 
             <button

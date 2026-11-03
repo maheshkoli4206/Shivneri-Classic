@@ -30,6 +30,7 @@ import {
   Check,
   Users,
   LayoutDashboard,
+  BarChart3,
   Globe,
   LogOut
 } from 'lucide-react';
@@ -382,10 +383,20 @@ const ExpenseManagement = () => {
               <span className="hidden sm:inline">{t('navPayments')}</span>
             </Link>
 
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/30">
-              <Wallet className="w-3.5 h-3.5" />
-              <span>{t('navExpenses')}</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors">
+              <Link to="/expenses" className="flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5 text-orange-400" />
+                <span>{t('navExpenses')}</span>
+              </Link>
             </div>
+
+            <Link
+              to="/reports"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <BarChart3 className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navReports')}</span>
+            </Link>
 
             <button
               onClick={toggleLanguage}

@@ -10,6 +10,7 @@ import maintenanceRoutes from './routes/maintenanceRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import expenseRoutes from './routes/expenseRoutes.js';
 import cashbookRoutes from './routes/cashbookRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 import verifyCsrfHeader from './middleware/csrfMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -59,6 +60,7 @@ app.use('/api/v1/maintenance', maintenanceRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/expenses', expenseRoutes);
 app.use('/api/v1/cashbook', cashbookRoutes);
+app.use('/api/v1/reports', reportRoutes);
 
 // Root route
 app.get('/', (req, res) => {

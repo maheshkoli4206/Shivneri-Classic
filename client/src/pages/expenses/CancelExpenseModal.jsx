@@ -130,3 +130,4 @@ const CancelExpenseModal = ({ isOpen, onClose, expense, onConfirm }) => {
 };
 
 export default CancelExpenseModal;
+

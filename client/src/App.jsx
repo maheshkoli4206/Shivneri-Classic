@@ -9,6 +9,7 @@ import ResidentList from './pages/residents/ResidentList';
 import MaintenanceManagement from './pages/maintenance/MaintenanceManagement';
 import PaymentManagement from './pages/payments/PaymentManagement';
 import ExpenseManagement from './pages/expenses/ExpenseManagement';
+import ReportsManagement from './pages/reports/ReportsManagement';
 
 function App() {
   return (
@@ -65,6 +66,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ExpenseManagement />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Reports & Analytics Route */}
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <ReportsManagement />
                 </ProtectedRoute>
               }
             />

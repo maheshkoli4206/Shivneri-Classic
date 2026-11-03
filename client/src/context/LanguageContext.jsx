@@ -159,7 +159,27 @@ const translations = {
     openingBalanceModalDesc: 'सोसायटीच्या बँक खात्यातील व रोख स्वरूपातील सुरुवातीची शिल्लक निश्चित करा.',
     runningBalanceLabel: 'चालू शिल्लक (Running Balance)',
     amountInLabel: 'जमा (In)',
-    amountOutLabel: 'खर्च (Out)'
+    amountOutLabel: 'खर्च (Out)',
+    // Phase 8: Reports & Analytics Module
+    navReports: 'अहवाल व विश्लेषण',
+    reportsTitle: 'सोसायटी वित्तीय अहवाल व विश्लेषण',
+    reportsSubtitle: 'शिवनेरी क्लासिक अपार्टमेंट - ए विंग मधील देखभाल वसुली, खर्च, कॅशबुक ताळेबंद आणि सांख्यिकी अहवाल',
+    tabOverview: 'मुख्य गोषवारा',
+    tabMaintenanceReport: 'देखभाल अहवाल',
+    tabExpenseReport: 'खर्च विश्लेषण',
+    tabCashbookReport: 'कॅशबुक ताळेबंद',
+    tabVisualCharts: 'आलेख व विश्लेषण',
+    exportPdfBtn: 'पीडीएफ डाउनलोड (PDF)',
+    exportExcelBtn: 'एक्सेल डाउनलोड (Excel)',
+    printReportBtn: 'अहवाल प्रिंट करा',
+    filterYearLabel: 'वर्ष निवडा',
+    filterMonthLabel: 'महिना निवडा',
+    filterResidentLabel: 'सभासद निवडा',
+    collectionRateLabel: 'वसुली टक्केवारी',
+    clearedResidentsLabel: 'थकबाकी शून्य सभासद',
+    partialResidentsLabel: 'अंशतः थकबाकी सभासद',
+    pendingResidentsLabel: 'पूर्ण थकीत सभासद',
+    unconfiguredOpeningNotice: 'नोंद: कॅशबुक आरंभी शिल्लक अद्याप निश्चित केलेली नाही. कृपया आरंभी शिल्लक कॉन्फिगर करा.'
   },
   en: {
     appName: 'Shivneri Classic Apartment',
@@ -319,7 +339,27 @@ const translations = {
     openingBalanceModalDesc: 'Set starting balances for Cash, Bank, UPI, and Cheque with effective date.',
     runningBalanceLabel: 'Running Balance',
     amountInLabel: 'Income (In)',
-    amountOutLabel: 'Expense (Out)'
+    amountOutLabel: 'Expense (Out)',
+    // Phase 8: Reports & Analytics Module
+    navReports: 'Reports & Analytics',
+    reportsTitle: 'Society Reports & Financial Analytics',
+    reportsSubtitle: 'Maintenance collections, expenses, cashbook statements and visual statistics for Shivneri Classic Apartment - A Wing',
+    tabOverview: 'Executive Overview',
+    tabMaintenanceReport: 'Maintenance Reports',
+    tabExpenseReport: 'Expense Analytics',
+    tabCashbookReport: 'Financial Statements',
+    tabVisualCharts: 'Visual Analytics',
+    exportPdfBtn: 'Export PDF',
+    exportExcelBtn: 'Export Excel',
+    printReportBtn: 'Print Report',
+    filterYearLabel: 'Select Year',
+    filterMonthLabel: 'Select Month',
+    filterResidentLabel: 'Select Resident',
+    collectionRateLabel: 'Collection Rate',
+    clearedResidentsLabel: 'Cleared Residents',
+    partialResidentsLabel: 'Partial Due Residents',
+    pendingResidentsLabel: 'Pending Dues Residents',
+    unconfiguredOpeningNotice: 'Notice: Cashbook opening balance has not been configured yet. Please configure opening balance in Expenses & Cashbook module.'
   }
 };
 
