@@ -151,3 +151,4 @@ paymentSchema.index({ residentId: 1, paymentDate: -1 });
 const Payment = mongoose.model('Payment', paymentSchema);
 
 export default Payment;
+

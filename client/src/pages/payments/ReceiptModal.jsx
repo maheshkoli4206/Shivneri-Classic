@@ -348,3 +348,4 @@ const ReceiptModal = ({ isOpen, onClose, payment }) => {
 };
 
 export default ReceiptModal;
+

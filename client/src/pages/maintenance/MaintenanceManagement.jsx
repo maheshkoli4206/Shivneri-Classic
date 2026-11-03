@@ -23,6 +23,8 @@ import {
   Layers,
   Check,
   Eye,
+  CreditCard,
+  Wallet,
   X
 } from 'lucide-react';
 
@@ -274,6 +276,22 @@ const MaintenanceManagement = () => {
               <Calendar className="w-3.5 h-3.5" />
               <span>{t('navMaintenance')}</span>
             </div>
+
+            <Link
+              to="/payments"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <CreditCard className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navPayments')}</span>
+            </Link>
+
+            <Link
+              to="/expenses"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Wallet className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navExpenses')}</span>
+            </Link>
 
             <button
               onClick={toggleLanguage}

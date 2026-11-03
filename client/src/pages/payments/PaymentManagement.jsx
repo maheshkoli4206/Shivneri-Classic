@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
   CreditCard,
@@ -15,12 +16,19 @@ import {
   User,
   Calendar,
   Building,
+  Building2,
   RefreshCw,
   PlusCircle,
   ShieldCheck,
   Eye,
-  Check
+  Check,
+  LayoutDashboard,
+  Users,
+  Wallet,
+  Globe,
+  LogOut
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import ReceiptModal from './ReceiptModal';
 import CancelPaymentModal from './CancelPaymentModal';
@@ -58,7 +66,8 @@ const MONTH_NAMES_EN = [
 ];
 
 const PaymentManagement = () => {
-  const { lang, t } = useLanguage();
+  const { logout } = useAuth();
+  const { lang, t, toggleLanguage } = useLanguage();
   const isMr = lang === 'mr';
 
   // Active Tab: 'history' or 'record'
@@ -340,8 +349,89 @@ const PaymentManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 sm:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+      {/* Top Header */}
+      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-20 px-4 sm:px-6 py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-md shadow-orange-600/30">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  {t('appName')}
+                </h1>
+                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30">
+                  {t('wing')}
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">{t('location')}</p>
+            </div>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navDashboard')}</span>
+            </Link>
+
+            <Link
+              to="/residents"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Users className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navResidents')}</span>
+            </Link>
+
+            <Link
+              to="/maintenance"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navMaintenance')}</span>
+            </Link>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/10 text-orange-400 border border-orange-500/30">
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>{t('navPayments')}</span>
+            </div>
+
+            <Link
+              to="/expenses"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
+            >
+              <Wallet className="w-3.5 h-3.5 text-slate-400" />
+              <span className="hidden sm:inline">{t('navExpenses')}</span>
+            </Link>
+
+            <button
+              onClick={toggleLanguage}
+              type="button"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+            >
+              <Globe className="w-3.5 h-3.5 text-orange-400" />
+              <span>{t('langSwitch')}</span>
+            </button>
+
+            <button
+              onClick={logout}
+              type="button"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-950/40 hover:bg-red-900/50 text-red-300 border border-red-800/40 transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t('logoutButton')}</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex-1 space-y-6">
         {/* Top Header Banner */}
         <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-orange-950/40 border border-slate-800 rounded-3xl p-6 shadow-xl relative overflow-hidden">
           <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -1102,9 +1192,10 @@ const PaymentManagement = () => {
           payment={paymentToCancel}
           onConfirm={handleCancelPaymentConfirm}
         />
-      </div>
+      </main>
     </div>
   );
 };
 
 export default PaymentManagement;
+

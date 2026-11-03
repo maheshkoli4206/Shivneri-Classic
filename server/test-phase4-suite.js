@@ -1,6 +1,13 @@
-import 'dotenv/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
 import app from './src/app.js';
 import Admin from './src/models/Admin.js';
 import Resident from './src/models/Resident.js';
@@ -10,6 +17,7 @@ const TEST_PORT = 5005;
 const BASE_URL = `http://localhost:${TEST_PORT}`;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/shivneri_classic_admin_db';
 const JWT_SECRET = process.env.JWT_SECRET || 'shivneri_classic_super_secure_jwt_secret_nashik_2026';
+process.env.JWT_SECRET = JWT_SECRET;
 const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 
 async function runPhase4TestSuite() {

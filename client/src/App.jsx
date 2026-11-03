@@ -8,6 +8,7 @@ import Dashboard from './pages/dashboard/Dashboard';
 import ResidentList from './pages/residents/ResidentList';
 import MaintenanceManagement from './pages/maintenance/MaintenanceManagement';
 import PaymentManagement from './pages/payments/PaymentManagement';
+import ExpenseManagement from './pages/expenses/ExpenseManagement';
 
 function App() {
   return (
@@ -54,6 +55,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <PaymentManagement />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Expenses & Cashbook Route */}
+            <Route
+              path="/expenses"
+              element={
+                <ProtectedRoute>
+                  <ExpenseManagement />
                 </ProtectedRoute>
               }
             />

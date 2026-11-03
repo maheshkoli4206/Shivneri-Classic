@@ -41,3 +41,4 @@ export async function generateAtomicReceiptNumber(year, month, session = null) {
 }
 
 export default generateAtomicReceiptNumber;
+
