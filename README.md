@@ -71,3 +71,4 @@ From the project root:
 - **Standardized Receipts**: All official receipts are numbered `SCA-YYYYMM-XXXX` using atomic sequential counters.
 - **Audited Expense Cancellation**: Financial expense vouchers are never hard deleted; cancellations require written reasons and admin identification.
 - **Isolated Target Database**: Dedicated exclusively to `shivneri_classic_admin_db`.
+

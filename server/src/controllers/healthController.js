@@ -13,3 +13,4 @@ export const getHealth = (req, res) => {
     uptimeSeconds: Math.floor(process.uptime())
   });
 };
+

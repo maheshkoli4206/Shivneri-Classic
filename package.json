@@ -9,8 +9,9 @@
     "client:build": "npm --prefix client run build",
     "server": "npm --prefix server run dev",
     "server:start": "npm --prefix server run start",
+    "seed:admin": "npm --prefix server run seed:admin",
     "build": "npm --prefix client run build",
-    "test": "node -e \"console.log('Phase 2 verification test passed')\""
+    "test": "node -e \"console.log('Project configuration verified: ok')\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

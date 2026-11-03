@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import healthRoutes from './routes/healthRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import verifyCsrfHeader from './middleware/csrfMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
 const app = express();
@@ -27,10 +29,10 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // Cookie Parser for HttpOnly JWT session tokens
 app.use(cookieParser());
 
-// Rate Limiter for API endpoints
+// Global Rate Limiter for general API endpoints
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Limit each IP to 200 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: {
@@ -41,10 +43,14 @@ const apiLimiter = rateLimit({
 
 app.use('/api', apiLimiter);
 
-// Health Check Route
-app.use('/api/v1/health', healthRoutes);
+// Anti-CSRF Header Check on mutating requests
+app.use('/api', verifyCsrfHeader);
 
-// Root route for sanity check
+// API Routes
+app.use('/api/v1/health', healthRoutes);
+app.use('/api/v1/auth', authRoutes);
+
+// Root route
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
