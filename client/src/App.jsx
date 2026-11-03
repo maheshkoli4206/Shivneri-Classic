@@ -7,6 +7,7 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import ResidentList from './pages/residents/ResidentList';
 import MaintenanceManagement from './pages/maintenance/MaintenanceManagement';
+import PaymentManagement from './pages/payments/PaymentManagement';
 
 function App() {
   return (
@@ -43,6 +44,16 @@ function App() {
               element={
                 <ProtectedRoute>
                   <MaintenanceManagement />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Protected Manual Payment & Official Receipt Route */}
+            <Route
+              path="/payments"
+              element={
+                <ProtectedRoute>
+                  <PaymentManagement />
                 </ProtectedRoute>
               }
             />

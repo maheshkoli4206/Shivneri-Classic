@@ -7,6 +7,7 @@ import healthRoutes from './routes/healthRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import residentRoutes from './routes/residentRoutes.js';
 import maintenanceRoutes from './routes/maintenanceRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 import verifyCsrfHeader from './middleware/csrfMiddleware.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 
@@ -53,6 +54,7 @@ app.use('/api/v1/health', healthRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/residents', residentRoutes);
 app.use('/api/v1/maintenance', maintenanceRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 
 // Root route
 app.get('/', (req, res) => {

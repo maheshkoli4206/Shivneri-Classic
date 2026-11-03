@@ -62,9 +62,9 @@ async function runVerification() {
       configData.config?.isConfigured === true;
     console.log(`  -> CHECK 1: ${check1Pass ? 'PASS' : 'FAIL'}\n`);
 
-    // 2. Verify Preview API for Month 12/2026 projects ₹16,000
-    console.log('[CHECK 2] Querying GET /api/v1/maintenance/preview?month=12&year=2026 ...');
-    const previewRes = await fetch(`${BASE_URL}/api/v1/maintenance/preview?month=12&year=2026`, {
+    // 2. Verify Preview API for Month 1/2027 projects ₹16,000 for 16 eligible members
+    console.log('[CHECK 2] Querying GET /api/v1/maintenance/preview?month=1&year=2027 ...');
+    const previewRes = await fetch(`${BASE_URL}/api/v1/maintenance/preview?month=1&year=2027`, {
       headers: authHeaders
     });
     const previewData = await previewRes.json();
@@ -123,3 +123,4 @@ async function runVerification() {
 }
 
 runVerification();
+
