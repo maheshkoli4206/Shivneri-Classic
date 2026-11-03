@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "6aea13b72d3bc6fe695b0155",
+    "singletonKey": "MAINTENANCE_CONFIG_SINGLETON",
+    "__v": 0,
+    "createdAt": "2026-11-03T17:02:47.981Z",
+    "defaultMonthlyAmount": 1500,
+    "dueDay": 10,
+    "financialYearStartMonth": 4,
+    "isConfigured": true,
+    "lateFeeAmount": 0,
+    "lateFeeEnabled": false,
+    "updatedAt": "2026-11-03T17:02:47.981Z",
+    "updatedByAdminId": "6aea115e4a99b6faf2d6ec9f"
+  }
+]

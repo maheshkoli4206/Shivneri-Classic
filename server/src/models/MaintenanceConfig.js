@@ -68,3 +68,4 @@ maintenanceConfigSchema.methods.toJSON = function () {
 const MaintenanceConfig = mongoose.model('MaintenanceConfig', maintenanceConfigSchema);
 
 export default MaintenanceConfig;
+

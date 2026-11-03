@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "6aea115e4a99b6faf2d6ec9f",
+    "singletonKey": "SHIVNERI_SUPER_ADMIN_SINGLETON",
+    "fullNameMarathi": "श्री ल.रा. कोळी",
+    "fullNameEnglish": "Shri Laxman Koli",
+    "designation": "Chairman / Building Secretary",
+    "username": "laxman_koli",
+    "passwordHash": "$2b$12$JkTJ2U5p8HhmoUf4WVYGFeaSroOYugaiy9sGnoV1gY1AdPFFnxTc.",
+    "role": "SUPER_ADMIN",
+    "lastLogin": "2026-11-03T17:02:57.639Z",
+    "createdAt": "2026-11-03T16:52:46.318Z",
+    "updatedAt": "2026-11-03T17:02:57.640Z",
+    "__v": 0
+  }
+]

@@ -217,14 +217,14 @@ Live query inspection of `shivneri_classic_admin_db`:
    6. श्री सतिष पवार
    7. श्री निलेश सानप
    8. श्री पंकज देवरे
-   9. श्री जितेंद्र सूर
-   10. श्री मनोज महाजन
-   11. श्री भाऊसाहेब आहेर
-   12. श्री समाधान कांगणे
-   13. श्री सुकदेव नवले
-   14. श्री रविंद्र केदारे
-   15. श्री बाळू सांगळे
-   16. श्री शांताराम काकड
+   9. श्री जितेंद्र सूर्यवंशी
+   10. श्री रविंद्र संगमनेरे
+   11. श्री पकंज चंद्रभान पवार
+   12. श्री विलास शिरसाठ
+   13. श्री आशिष महाजन
+   14. श्री अजित कदम
+   15. श्री विनय दत्ता मानकर
+   16. श्री अे. जी. दिवाण
 3. **Resident Accounts**: Exactly 0. No resident passwords, credentials, or login models exist.
 4. **Financial Boundaries Preserved**:
    - Zero payment collection endpoints created.
@@ -265,3 +265,4 @@ Phase 5 has been executed in full compliance with the approved architecture. The
 - **Phase 6 Scope (Awaiting User Directive)**: Payment Collection, Offline Payment Recording, Atomic Receipt Generation (`SCA-YYYYMM-XXXX`), and Marathi Payment Receipts.
 
 *Awaiting your review and approval before proceeding to Phase 6.*
+

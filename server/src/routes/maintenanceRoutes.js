@@ -64,3 +64,4 @@ router.get('/dues/:id', getMaintenanceDueById);
 router.get('/summary', getMaintenanceSummary);
 
 export default router;
+
