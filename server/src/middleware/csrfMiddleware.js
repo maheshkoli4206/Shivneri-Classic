@@ -21,3 +21,4 @@ export const verifyCsrfHeader = (req, res, next) => {
 };
 
 export default verifyCsrfHeader;
+
