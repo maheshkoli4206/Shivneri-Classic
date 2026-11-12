@@ -1,0 +1,71 @@
+{
+  "timestamp": "2026-11-04T15:02:51.794Z",
+  "status": "VERIFIED_SUCCESSFUL",
+  "backupDirectory": "D:\\Shivneri Classic App\\backups\\fresh_reset_20261104_203250",
+  "archivePath": "D:\\Shivneri Classic App\\backups\\fresh_reset_20261104_203250\\shivneri_classic_prod_db_backup.gz",
+  "archiveSize": 6282,
+  "sha256": "563c1285e5e2530a8ed565bdcca35066dd0e2970a496b30c8afdb60b4afa415a",
+  "collectionsCount": 12,
+  "parityReport": {
+    "maintenancedues": {
+      "production": 56,
+      "restored": 56,
+      "match": true
+    },
+    "payments": {
+      "production": 3,
+      "restored": 3,
+      "match": true
+    },
+    "cashbookopeningbalances": {
+      "production": 0,
+      "restored": 0,
+      "match": true
+    },
+    "counters": {
+      "production": 1,
+      "restored": 1,
+      "match": true
+    },
+    "residents": {
+      "production": 20,
+      "restored": 20,
+      "match": true
+    },
+    "chairmantransferlogs": {
+      "production": 0,
+      "restored": 0,
+      "match": true
+    },
+    "admins": {
+      "production": 1,
+      "restored": 1,
+      "match": true
+    },
+    "maintenanceconfigs": {
+      "production": 1,
+      "restored": 1,
+      "match": true
+    },
+    "expenses": {
+      "production": 0,
+      "restored": 0,
+      "match": true
+    },
+    "expensecategories": {
+      "production": 9,
+      "restored": 9,
+      "match": true
+    },
+    "auditlogs": {
+      "production": 8,
+      "restored": 8,
+      "match": true
+    },
+    "passwordresets": {
+      "production": 0,
+      "restored": 0,
+      "match": true
+    }
+  }
+}

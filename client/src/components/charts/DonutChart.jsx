@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 
 const DEFAULT_COLORS = [
-  '#f97316', // orange-500
-  '#06b6d4', // cyan-500
-  '#10b981', // emerald-500
-  '#8b5cf6', // purple-500
-  '#f59e0b', // amber-500
-  '#ec4899', // pink-500
-  '#3b82f6', // blue-500
-  '#14b8a6', // teal-500
-  '#64748b'  // slate-500
+  '#ea580c', // orange-600
+  '#0284c7', // sky-600
+  '#059669', // emerald-600
+  '#7c3aed', // violet-600
+  '#d97706', // amber-600
+  '#db2777', // pink-600
+  '#2563eb', // blue-600
+  '#0d9488', // teal-600
+  '#475569'  // slate-600
 ];
 
 const DonutChart = ({
@@ -17,7 +17,7 @@ const DonutChart = ({
   title = '',
   centerText = '',
   centerSubtext = '',
-  emptyText = 'कोणतीही माहिती उपलब्ध नाही (No Data Available)'
+  emptyText = 'No data available'
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
@@ -26,7 +26,7 @@ const DonutChart = ({
 
   if (!validData || validData.length === 0 || total === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-48 bg-slate-950/40 rounded-xl border border-slate-800 text-slate-500 text-xs">
+      <div className="flex flex-col items-center justify-center h-48 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 text-xs">
         <span>{emptyText}</span>
       </div>
     );
@@ -37,7 +37,6 @@ const DonutChart = ({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
 
-  // Compute stroke offsets
   let accumulatedPercent = 0;
   const slices = validData.map((item, idx) => {
     const val = Number(item.value || item.amount || 0);
@@ -59,7 +58,7 @@ const DonutChart = ({
   return (
     <div className="w-full space-y-4">
       {title && (
-        <h4 className="font-semibold text-xs text-slate-200">{title}</h4>
+        <h4 className="font-bold text-xs text-slate-900">{title}</h4>
       )}
 
       <div className="flex flex-col sm:flex-row items-center justify-around gap-4">
@@ -69,89 +68,91 @@ const DonutChart = ({
             width={size}
             height={size}
             viewBox={`0 0 ${size} ${size}`}
-            className="transform -rotate-90 overflow-visible"
+            className="-rotate-90"
           >
-            {/* Background Track */}
+            {/* Background ring */}
             <circle
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              fill="transparent"
-              stroke="#1e293b"
+              fill="none"
+              stroke="#f1f5f9"
               strokeWidth={strokeWidth}
             />
 
             {/* Slices */}
-            {slices.map((slice, idx) => {
-              const isHovered = hoveredIdx === idx;
-              return (
-                <circle
-                  key={idx}
-                  cx={size / 2}
-                  cy={size / 2}
-                  r={radius}
-                  fill="transparent"
-                  stroke={slice.color}
-                  strokeWidth={isHovered ? strokeWidth + 4 : strokeWidth}
-                  strokeDasharray={slice.strokeDasharray}
-                  strokeDashoffset={slice.strokeDashoffset}
-                  strokeLinecap="round"
-                  onMouseEnter={() => setHoveredIdx(idx)}
-                  onMouseLeave={() => setHoveredIdx(null)}
-                  className="cursor-pointer transition-all duration-300"
-                />
-              );
-            })}
+            {slices.map((slice, i) => (
+              <circle
+                key={i}
+                cx={size / 2}
+                cy={size / 2}
+                r={radius}
+                fill="none"
+                stroke={slice.color}
+                strokeWidth={hoveredIdx === i ? strokeWidth + 4 : strokeWidth}
+                strokeDasharray={slice.strokeDasharray}
+                strokeDashoffset={slice.strokeDashoffset}
+                className="transition-all duration-300 cursor-pointer"
+                onMouseEnter={() => setHoveredIdx(i)}
+                onMouseLeave={() => setHoveredIdx(null)}
+              />
+            ))}
           </svg>
 
-          {/* Center Info Cutout */}
+          {/* Center text in donut hole */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2">
-            <span className="text-sm font-black font-mono text-white">
-              {hoveredIdx !== null && slices[hoveredIdx]
-                ? `₹${slices[hoveredIdx].val.toLocaleString('en-IN')}`
-                : centerText || `₹${total.toLocaleString('en-IN')}`}
-            </span>
-            <span className="text-[10px] text-slate-400 mt-0.5 max-w-[100px] truncate">
-              {hoveredIdx !== null && slices[hoveredIdx]
-                ? `${slices[hoveredIdx].percent}%`
-                : centerSubtext || 'एकूण रक्कम'}
-            </span>
+            {hoveredIdx !== null && slices[hoveredIdx] ? (
+              <>
+                <span className="text-[11px] font-bold text-slate-900 truncate max-w-[100px]">
+                  {slices[hoveredIdx].name || slices[hoveredIdx].label}
+                </span>
+                <span className="text-xs font-mono font-bold" style={{ color: slices[hoveredIdx].color }}>
+                  {slices[hoveredIdx].percent}%
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-xs font-bold text-slate-900 font-mono">
+                  {centerText || `₹${Math.round(total / 1000)}k`}
+                </span>
+                {centerSubtext && (
+                  <span className="text-[9px] text-slate-500 uppercase tracking-wider">
+                    {centerSubtext}
+                  </span>
+                )}
+              </>
+            )}
           </div>
         </div>
 
-        {/* Legend List */}
-        <div className="w-full sm:w-auto flex-1 max-h-48 overflow-y-auto space-y-1.5 text-xs pr-1">
-          {slices.map((slice, idx) => {
-            const isHovered = hoveredIdx === idx;
-            return (
-              <div
-                key={idx}
-                onMouseEnter={() => setHoveredIdx(idx)}
-                onMouseLeave={() => setHoveredIdx(null)}
-                className={`flex items-center justify-between p-1.5 rounded-lg transition-colors cursor-pointer ${
-                  isHovered ? 'bg-slate-800' : 'hover:bg-slate-850'
-                }`}
-              >
-                <div className="flex items-center gap-2 truncate pr-2">
-                  <span
-                    className="w-2.5 h-2.5 rounded-sm shrink-0"
-                    style={{ backgroundColor: slice.color }}
-                  />
-                  <span className="text-slate-300 truncate font-medium">
-                    {slice.categoryNameMarathi || slice.label || slice.category}
-                  </span>
-                </div>
-                <div className="text-right shrink-0">
-                  <span className="font-mono font-bold text-slate-100">
-                    ₹{slice.val.toLocaleString('en-IN')}
-                  </span>
-                  <span className="text-[10px] text-slate-400 ml-1.5">
-                    ({slice.percent}%)
-                  </span>
-                </div>
+        {/* Legend */}
+        <div className="flex-1 max-h-48 overflow-y-auto space-y-1.5 text-xs pr-1">
+          {slices.map((slice, i) => (
+            <div
+              key={i}
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+              className={`flex items-center justify-between p-1.5 rounded-lg cursor-pointer transition-colors ${
+                hoveredIdx === i ? 'bg-slate-100 font-bold' : 'hover:bg-slate-50'
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: slice.color }}
+                />
+                <span className="text-slate-700 truncate text-[11px]">
+                  {slice.name || slice.label}
+                </span>
               </div>
-            );
-          })}
+              <div className="text-right shrink-0 font-mono text-[11px] text-slate-900">
+                ₹{slice.val.toLocaleString('en-IN')}{' '}
+                <span className="text-[10px] text-slate-500 font-normal">
+                  ({slice.percent}%)
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

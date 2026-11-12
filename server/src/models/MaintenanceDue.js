@@ -26,6 +26,48 @@ const maintenanceDueSchema = new mongoose.Schema(
       default: 'A Wing',
       trim: true
     },
+    // Category & Property Type Snapshots at generation time
+    propertyTypeSnapshot: {
+      type: String,
+      enum: ['RESIDENTIAL_FLAT', 'SHOP'],
+      default: 'RESIDENTIAL_FLAT'
+    },
+    maintenanceCategorySnapshot: {
+      type: String,
+      enum: ['RESIDENTIAL', 'SHOP', 'CHAIRMAN', 'UNASSIGNED'],
+      default: 'RESIDENTIAL'
+    },
+    appliedRate: {
+      type: Number,
+      default: 1000,
+      min: [0, 'दर ० किंवा जास्त असावा']
+    },
+    // Standard category rate snapshot before any resident or monthly override
+    standardRateSnapshot: {
+      type: Number,
+      default: null
+    },
+    // Master resident-specific custom rate snapshot if configured
+    customMasterRateSnapshot: {
+      type: Number,
+      default: null
+    },
+    // Flag indicating whether this month's bill had a temporary override
+    isMonthlyOverride: {
+      type: Boolean,
+      default: false
+    },
+    // Flag indicating zero-amount bill (PAID with ₹0 balance)
+    isZeroAmountBill: {
+      type: Boolean,
+      default: false
+    },
+    // Administrative reason for reduced/zero/override bill
+    overrideReason: {
+      type: String,
+      default: '',
+      trim: true
+    },
     // Billing Period: Month (1 to 12) & Year
     month: {
       type: Number,
@@ -60,6 +102,40 @@ const maintenanceDueSchema = new mongoose.Schema(
       default: 0,
       min: [0, 'भरलेली रक्कम ० किंवा जास्त असावी']
     },
+    // Advance amount applied/adjusted towards this bill
+    advanceAdjustedAmount: {
+      type: Number,
+      default: 0,
+      min: [0, 'अ‍ॅडव्हान्स रक्कम ० किंवा जास्त असावी']
+    },
+    isAdvanceApplied: {
+      type: Boolean,
+      default: false
+    },
+    advanceAdjustmentDetails: [
+      {
+        advancePaymentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'AdvancePayment'
+        },
+        receiptNumber: {
+          type: String,
+          trim: true
+        },
+        amount: {
+          type: Number,
+          min: 0
+        },
+        adjustedAt: {
+          type: Date,
+          default: Date.now
+        },
+        adjustedByAdminId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Admin'
+        }
+      }
+    ],
     // Outstanding balance: initially equals totalAmountDue
     outstandingBalance: {
       type: Number,

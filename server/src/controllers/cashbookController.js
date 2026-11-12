@@ -136,42 +136,52 @@ export const getCashbook = async (req, res) => {
     const transactions = [];
 
     paymentsList.forEach(p => {
+      const amountVal = typeof p.amountReceived === 'number' ? p.amountReceived : (Number(p.amountReceived) || 0);
       transactions.push({
         id: p._id,
         date: p.paymentDate,
         type: 'INCOME',
         refNumber: p.receiptNumber,
+        reference: p.receiptNumber,
         title: `देखभाल जमा: ${p.residentNameMarathi}`,
         party: p.residentNameMarathi,
         method: p.paymentMethod,
+        paymentMethod: p.paymentMethod,
         transactionRef: p.transactionRef,
-        amountIn: p.amountReceived,
+        amount: amountVal,
+        amountIn: amountVal,
         amountOut: 0
       });
     });
 
     expensesList.forEach(e => {
+      const amountVal = typeof e.amount === 'number' ? e.amount : (Number(e.amount) || 0);
       transactions.push({
         id: e._id,
         date: e.expenseDate,
         type: 'EXPENSE',
         refNumber: e.voucherNumber,
+        reference: e.voucherNumber,
         title: `${e.titleMarathi} (${e.category})`,
         party: e.payeeName,
         method: e.paymentMethod,
+        paymentMethod: e.paymentMethod,
         transactionRef: e.transactionRef,
+        amount: amountVal,
         amountIn: 0,
-        amountOut: e.amount
+        amountOut: amountVal
       });
     });
 
     // Sort chronologically ascending
     transactions.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    // Calculate running balance
-    let running = openingBalances.total;
+    // Calculate running balance safely with finite checks
+    let running = Number.isFinite(openingBalances.total) ? Number(openingBalances.total) : 0;
     const ledger = transactions.map(t => {
-      running = running + t.amountIn - t.amountOut;
+      const inVal = Number.isFinite(t.amountIn) ? t.amountIn : 0;
+      const outVal = Number.isFinite(t.amountOut) ? t.amountOut : 0;
+      running = Math.round((running + inVal - outVal) * 100) / 100;
       return {
         ...t,
         runningBalance: running

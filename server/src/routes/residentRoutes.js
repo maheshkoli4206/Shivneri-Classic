@@ -6,13 +6,22 @@ import {
   getResidentById,
   createResident,
   updateResident,
-  updateResidentStatus
+  updateResidentStatus,
+  getCategorySummary,
+  batchAssignCategories
 } from '../controllers/residentController.js';
 
 const router = Router();
 
 // Protect ALL resident endpoints with Super Admin authentication
 router.use(requireAdminAuth);
+
+// Category endpoints (must precede /:id to avoid ID pattern match)
+// GET /api/v1/residents/category-summary
+router.get('/category-summary', getCategorySummary);
+
+// PUT /api/v1/residents/batch-categories
+router.put('/batch-categories', batchAssignCategories);
 
 // Validation for creating/updating a resident
 const residentValidation = [
@@ -25,7 +34,19 @@ const residentValidation = [
   body('email')
     .optional({ checkFalsy: true })
     .isEmail()
-    .withMessage('कृपया वैध ईमेल पत्ता प्रविष्ट करा (Please provide a valid email)')
+    .withMessage('कृपया वैध ईमेल पत्ता प्रविष्ट करा (Please provide a valid email)'),
+  body('propertyType')
+    .optional()
+    .isIn(['RESIDENTIAL_FLAT', 'SHOP'])
+    .withMessage('अवैध मालमत्ता प्रकार (Invalid property type)'),
+  body('maintenanceCategory')
+    .optional()
+    .isIn(['RESIDENTIAL', 'SHOP', 'CHAIRMAN', 'UNASSIGNED'])
+    .withMessage('अवैध देखभाल श्रेणी (Invalid maintenance category)'),
+  body('customMaintenanceAmount')
+    .optional({ nullable: true, checkFalsy: true })
+    .isFloat({ min: 0 })
+    .withMessage('विशेष देखभाल रक्कम ० किंवा जास्त असावी (Custom amount must be 0 or greater)')
 ];
 
 // GET /api/v1/residents

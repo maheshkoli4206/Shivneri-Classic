@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { validationResult } from 'express-validator';
 import Resident from '../models/Resident.js';
+import AuditLog from '../models/AuditLog.js';
 
 /**
  * GET /api/v1/residents
@@ -100,6 +101,9 @@ export const createResident = async (req, res) => {
       email = '',
       address = '',
       status = 'ACTIVE',
+      propertyType = 'RESIDENTIAL_FLAT',
+      maintenanceCategory = 'UNASSIGNED',
+      customMaintenanceAmount = null,
       notes = ''
     } = req.body;
 
@@ -128,6 +132,9 @@ export const createResident = async (req, res) => {
       email: email.trim().toLowerCase(),
       address: address.trim(),
       status: status === 'INACTIVE' ? 'INACTIVE' : 'ACTIVE',
+      propertyType: ['RESIDENTIAL_FLAT', 'SHOP'].includes(propertyType) ? propertyType : 'RESIDENTIAL_FLAT',
+      maintenanceCategory: ['RESIDENTIAL', 'SHOP', 'CHAIRMAN', 'UNASSIGNED'].includes(maintenanceCategory) ? maintenanceCategory : 'UNASSIGNED',
+      customMaintenanceAmount: customMaintenanceAmount != null && customMaintenanceAmount !== '' ? Number(customMaintenanceAmount) : null,
       notes: notes.trim()
     });
 
@@ -185,6 +192,9 @@ export const updateResident = async (req, res) => {
       email = '',
       address = '',
       status,
+      propertyType,
+      maintenanceCategory,
+      customMaintenanceAmount,
       notes = ''
     } = req.body;
 
@@ -214,6 +224,15 @@ export const updateResident = async (req, res) => {
     resident.address = address !== undefined ? address.trim() : resident.address;
     if (status && ['ACTIVE', 'INACTIVE'].includes(status.toUpperCase())) {
       resident.status = status.toUpperCase();
+    }
+    if (propertyType && ['RESIDENTIAL_FLAT', 'SHOP'].includes(propertyType)) {
+      resident.propertyType = propertyType;
+    }
+    if (maintenanceCategory && ['RESIDENTIAL', 'SHOP', 'CHAIRMAN', 'UNASSIGNED'].includes(maintenanceCategory)) {
+      resident.maintenanceCategory = maintenanceCategory;
+    }
+    if (customMaintenanceAmount !== undefined) {
+      resident.customMaintenanceAmount = (customMaintenanceAmount !== null && customMaintenanceAmount !== '') ? Number(customMaintenanceAmount) : null;
     }
     resident.notes = notes !== undefined ? notes.trim() : resident.notes;
 
@@ -282,6 +301,130 @@ export const updateResidentStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'स्थिती अद्यतनित करताना त्रुटी आली (Failed to update status)'
+    });
+  }
+};
+
+/**
+ * GET /api/v1/residents/category-summary
+ * Get resident count and list by maintenance category
+ */
+export const getCategorySummary = async (req, res) => {
+  try {
+    const allResidents = await Resident.find({}).sort({ flatNumber: 1, fullNameMarathi: 1 });
+
+    const summary = {
+      total: allResidents.length,
+      residentialCount: 0,
+      shopCount: 0,
+      chairmanCount: 0,
+      unassignedCount: 0,
+      unassignedResidents: []
+    };
+
+    allResidents.forEach(r => {
+      const cat = r.maintenanceCategory || 'UNASSIGNED';
+      if (cat === 'RESIDENTIAL') summary.residentialCount += 1;
+      else if (cat === 'SHOP') summary.shopCount += 1;
+      else if (cat === 'CHAIRMAN') summary.chairmanCount += 1;
+      else {
+        summary.unassignedCount += 1;
+        summary.unassignedResidents.push({
+          _id: r._id,
+          fullNameMarathi: r.fullNameMarathi,
+          flatNumber: r.flatNumber || '',
+          wing: r.wing || 'A Wing',
+          status: r.status,
+          propertyType: r.propertyType || (r.flatNumber?.toLowerCase().includes('shop') ? 'SHOP' : 'RESIDENTIAL_FLAT'),
+          maintenanceCategory: 'UNASSIGNED'
+        });
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      summary
+    });
+  } catch (error) {
+    console.error('Error in getCategorySummary:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'श्रेणी सारांश मिळवताना त्रुटी आली (Failed to retrieve category summary)'
+    });
+  }
+};
+
+/**
+ * PUT /api/v1/residents/batch-categories
+ * Batch assign/update maintenance categories for residents
+ */
+export const batchAssignCategories = async (req, res) => {
+  try {
+    const { assignments } = req.body;
+
+    if (!Array.isArray(assignments) || assignments.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'कृपया श्रेणी निश्चितीसाठी सभासदांची यादी पाठवा (Assignments array is required)'
+      });
+    }
+
+    let updatedCount = 0;
+    const validCategories = ['RESIDENTIAL', 'SHOP', 'CHAIRMAN', 'UNASSIGNED'];
+    const validPropertyTypes = ['RESIDENTIAL_FLAT', 'SHOP'];
+
+    for (const item of assignments) {
+      if (!item.residentId || !mongoose.Types.ObjectId.isValid(item.residentId)) {
+        continue;
+      }
+
+      const updateFields = {};
+      if (item.propertyType && validPropertyTypes.includes(item.propertyType)) {
+        updateFields.propertyType = item.propertyType;
+      }
+      if (item.maintenanceCategory && validCategories.includes(item.maintenanceCategory)) {
+        updateFields.maintenanceCategory = item.maintenanceCategory;
+      }
+      if (item.customMaintenanceAmount !== undefined) {
+        updateFields.customMaintenanceAmount = (item.customMaintenanceAmount !== null && item.customMaintenanceAmount !== '')
+          ? Number(item.customMaintenanceAmount)
+          : null;
+      }
+
+      if (Object.keys(updateFields).length > 0) {
+        await Resident.findByIdAndUpdate(item.residentId, { $set: updateFields });
+        updatedCount += 1;
+      }
+    }
+
+    // Record immutable audit log
+    try {
+      await AuditLog.create({
+        action: 'MAINTENANCE_CATEGORY_ASSIGNED',
+        performedByAdminId: req.admin._id,
+        entityType: 'RESIDENT',
+        entityId: req.admin._id,
+        details: {
+          updatedCount,
+          totalSubmitted: assignments.length
+        },
+        ipAddress: req.ip || '',
+        userAgent: req.headers['user-agent'] || ''
+      });
+    } catch (auditErr) {
+      console.warn('Failed to record audit log for batch category assignment:', auditErr.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `${updatedCount} सभासदांची देखभाल श्रेणी यशस्वीरीत्या निश्चित केली (Categories assigned successfully for ${updatedCount} residents)`,
+      updatedCount
+    });
+  } catch (error) {
+    console.error('Error in batchAssignCategories:', error.message);
+    return res.status(500).json({
+      success: false,
+      message: 'श्रेणी निश्चिती करताना त्रुटी आली (Failed to assign categories)'
     });
   }
 };

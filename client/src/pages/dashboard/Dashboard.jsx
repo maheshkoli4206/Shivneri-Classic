@@ -1,37 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useResidentContext } from '../../context/ResidentContext';
+import api from '../../services/api';
 import {
   Building2,
   ShieldCheck,
-  LogOut,
-  UserCheck,
-  Database,
-  Receipt,
   Users,
   Calendar,
   CreditCard,
   Wallet,
   BarChart3,
-  Globe,
   Clock,
-  ArrowRight
+  ArrowRight,
+  CheckCircle2
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const { admin, logout } = useAuth();
-  const { t, toggleLanguage } = useLanguage();
+  const { admin } = useAuth();
+  const { t, lang } = useLanguage();
+  const { totalResidentsCount } = useResidentContext();
+  const [stats, setStats] = useState({
+    residentsCount: totalResidentsCount ?? 0,
+    maintenanceRate: 1000,
+    totalCollected: 0,
+    totalOutstanding: 0,
+    loading: false
+  });
 
-  const handleLogout = async () => {
-    await logout();
-  };
+  // Keep stats.residentsCount synchronized with shared ResidentContext
+  useEffect(() => {
+    if (totalResidentsCount != null) {
+      setStats(prev => ({
+        ...prev,
+        residentsCount: totalResidentsCount
+      }));
+    }
+  }, [totalResidentsCount]);
+
+  useEffect(() => {
+    // Try to fetch live metrics
+    const fetchQuickMetrics = async () => {
+      try {
+        const [resRes, maintRes] = await Promise.allSettled([
+          api.get('/residents'),
+          api.get('/maintenance/config')
+        ]);
+
+        let count = totalResidentsCount ?? 0;
+        if (resRes.status === 'fulfilled' && resRes.value.data?.residents) {
+          count = resRes.value.data.residents.length;
+        }
+
+        let rate = 1000;
+        if (maintRes.status === 'fulfilled' && maintRes.value.data?.config) {
+          rate = maintRes.value.data.config.defaultMonthlyAmount || 1000;
+        }
+
+        setStats(prev => ({
+          ...prev,
+          residentsCount: count,
+          maintenanceRate: rate
+        }));
+      } catch (err) {
+        // Fallback default master values
+      }
+    };
+    fetchQuickMetrics();
+  }, [totalResidentsCount]);
 
   const formatLastLogin = (dateString) => {
-    if (!dateString) return 'प्रथम लॉगिन (First Login)';
+    if (!dateString) return lang === 'mr' ? 'प्रथम लॉगिन' : 'First Login';
     try {
       const d = new Date(dateString);
-      return d.toLocaleString('mr-IN', {
+      return d.toLocaleString(lang === 'mr' ? 'mr-IN' : 'en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short'
       });
@@ -41,300 +84,369 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      {/* Top Navigation Bar */}
-      <header className="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0 z-20 px-4 sm:px-6 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-600 flex items-center justify-center text-white shadow-md shadow-orange-600/30">
-              <Building2 className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                  {t('appName')}
-                </h1>
-                <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                  {t('wing')}
+    <div className="space-y-4 sm:space-y-6">
+      {/* Welcome Banner Card */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-6 shadow-xs relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 relative z-10">
+          <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+            <img
+              src="/building-logo.png"
+              alt="Shivneri Classic Apartment Emblem"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover shadow-md ring-2 ring-amber-400/50 shadow-orange-500/20 shrink-0 bg-white block"
+            />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-lg sm:text-2xl font-bold text-slate-900 tracking-tight">
+                  {lang === 'mr' ? 'स्वागत आहे, ' : 'Welcome, '}
+                  {lang === 'mr'
+                    ? (admin?.fullNameMarathi || 'श्री ल.रा. कोळी')
+                    : 'Shri Laxman Koli'}
+                </h2>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  {t('adminRoleBadge')}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                {t('location')}
+              <p className="text-xs sm:text-sm text-slate-500 mt-1 leading-snug">
+                {lang === 'mr'
+                  ? 'शिवनेरी क्लासिक अपार्टमेंट (ए विंग) • औरंगाबाद रोड, पंचवटी, नाशिक'
+                  : 'Shivneri Classic Apartment (A Wing) • Aurangabad Road, Panchavati, Nashik'}
               </p>
             </div>
           </div>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link
-              to="/residents"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-            >
-              <Users className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t('navResidents')}</span>
-            </Link>
-
-            <Link
-              to="/maintenance"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-            >
-              <Calendar className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t('navMaintenance')}</span>
-            </Link>
-
-            <Link
-              to="/payments"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-            >
-              <CreditCard className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t('navPayments')}</span>
-            </Link>
-
-            <Link
-              to="/expenses"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
-            >
-              <Wallet className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t('navExpenses')}</span>
-            </Link>
-
-            <Link
-              to="/reports"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 transition-colors"
-            >
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>{t('navReports')}</span>
-            </Link>
-
-            <button
-              onClick={toggleLanguage}
-              type="button"
-              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
-            >
-              <Globe className="w-3.5 h-3.5 text-orange-400" />
-              <span>{t('langSwitch')}</span>
-            </button>
-
-            <button
-              onClick={handleLogout}
-              type="button"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-950/40 hover:bg-red-900/50 text-red-300 border border-red-800/40 transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">{t('logoutButton')}</span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex-1">
-        {/* Welcome Admin Banner */}
-        <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 shadow-xl">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-center text-orange-400">
-                <UserCheck className="w-7 h-7" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl sm:text-2xl font-bold text-white">
-                    {admin?.fullNameMarathi || 'श्री ल.रा. कोळी'}
-                  </h2>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    {t('adminRoleBadge')}
-                  </span>
-                </div>
-                <p className="text-sm text-slate-400 mt-0.5">
-                  {admin?.designation || 'Chairman / Building Secretary'} • वापरकर्तानाव:{' '}
-                  <span className="text-orange-400 font-mono font-medium">{admin?.username}</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="text-left sm:text-right text-xs text-slate-400 bg-slate-950/60 px-4 py-2 rounded-xl border border-slate-800">
-              <div className="flex items-center sm:justify-end gap-1.5 text-slate-400 mb-0.5">
-                <Clock className="w-3.5 h-3.5 text-orange-400" />
-                <span>शेवटचे लॉगिन:</span>
-              </div>
-              <span className="text-white font-medium">{formatLastLogin(admin?.lastLogin)}</span>
+          <div className="flex items-center gap-3 bg-slate-50 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200/80 text-xs text-slate-600 shrink-0 self-start md:self-auto">
+            <Clock className="w-4 h-4 text-orange-600 shrink-0" />
+            <div>
+              <span className="text-slate-400 block text-[10px]">
+                {lang === 'mr' ? 'शेवटचे लॉगिन' : 'Last Login'}:
+              </span>
+              <span className="font-semibold text-slate-800">
+                {formatLastLogin(admin?.lastLogin)}
+              </span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Operational Modules Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {/* Quick Access Card: Resident Master Registry */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+      {/* KPI Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Card 1: Total Residents */}
+        <Link
+          to="/residents"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-orange-300 transition-all group min-h-[44px]"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              {lang === 'mr' ? 'एकूण सभासद' : 'Total Residents'}
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Users className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              {stats.residentsCount}
+            </span>
+            <span className="text-xs font-medium text-slate-500">
+              {lang === 'mr' ? 'सदनिका व दुकाने' : 'Flats & Shops'}
+            </span>
+          </div>
+          <p className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            {lang === 'mr' ? `${stats.residentsCount} सभासद सक्रिय` : `${stats.residentsCount} Members Active`}
+          </p>
+        </Link>
+
+        {/* Card 2: Maintenance Rate */}
+        <Link
+          to="/maintenance"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-orange-300 transition-all group min-h-[44px]"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              {lang === 'mr' ? 'मासिक देखभाल दर' : 'Maintenance Rate'}
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Calendar className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              ₹{stats.maintenanceRate.toLocaleString('en-IN')}
+            </span>
+            <span className="text-xs font-medium text-slate-500">
+              {lang === 'mr' ? '/ दरमहा' : '/ Month'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-medium mt-2">
+            {lang === 'mr' ? 'देय दिनांक: दरमहा १० तारीख' : 'Due Day: 10th of Month'}
+          </p>
+        </Link>
+
+        {/* Card 3: Total Collections */}
+        <Link
+          to="/payments"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-orange-300 transition-all group min-h-[44px]"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              {lang === 'mr' ? 'एकूण जमा पावती' : 'Total Collected'}
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <CreditCard className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              ₹0
+            </span>
+            <span className="text-xs font-medium text-slate-500">
+              {lang === 'mr' ? 'अधिकृत जमा' : 'Official Total'}
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-medium mt-2">
+            {lang === 'mr' ? 'थकीत शून्य नोंदणी' : 'Clean Master Records'}
+          </p>
+        </Link>
+
+        {/* Card 4: Total Outstanding */}
+        <Link
+          to="/reports"
+          className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs hover:shadow-md hover:border-orange-300 transition-all group min-h-[44px]"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+              {lang === 'mr' ? 'शिल्लक येणे बाकी' : 'Total Outstanding'}
+            </span>
+            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Wallet className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-2xl sm:text-3xl font-extrabold text-slate-900">
+              ₹0
+            </span>
+            <span className="text-xs font-medium text-slate-500">
+              {lang === 'mr' ? 'बाकी शिल्लक' : 'Pending'}
+            </span>
+          </div>
+          <p className="text-xs text-emerald-600 font-medium mt-2">
+            {lang === 'mr' ? 'कोणतीही थकबाकी नाही' : 'Zero Arrears'}
+          </p>
+        </Link>
+      </div>
+
+      {/* Quick Action Navigation Bar */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 p-4 sm:p-5 shadow-xs">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+          {lang === 'mr' ? 'त्वरित कृती' : 'Quick Actions'}
+        </h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
+          <Link
+            to="/residents"
+            className="min-h-[44px] flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-orange-50/60 active:bg-orange-100/60 border border-slate-200/80 hover:border-orange-300 text-slate-700 hover:text-orange-700 transition-all text-xs font-semibold"
+          >
+            <Users className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">{lang === 'mr' ? 'सभासद यादी' : 'View Residents'}</span>
+          </Link>
+          <Link
+            to="/maintenance"
+            className="min-h-[44px] flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-orange-50/60 active:bg-orange-100/60 border border-slate-200/80 hover:border-orange-300 text-slate-700 hover:text-orange-700 transition-all text-xs font-semibold"
+          >
+            <Calendar className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">{lang === 'mr' ? 'देयके तयार करा' : 'Generate Bills'}</span>
+          </Link>
+          <Link
+            to="/payments"
+            className="min-h-[44px] flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-orange-50/60 active:bg-orange-100/60 border border-slate-200/80 hover:border-orange-300 text-slate-700 hover:text-orange-700 transition-all text-xs font-semibold"
+          >
+            <CreditCard className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">{lang === 'mr' ? 'पेमेंट नोंदवा' : 'Record Payment'}</span>
+          </Link>
+          <Link
+            to="/expenses"
+            className="min-h-[44px] flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-orange-50/60 active:bg-orange-100/60 border border-slate-200/80 hover:border-orange-300 text-slate-700 hover:text-orange-700 transition-all text-xs font-semibold"
+          >
+            <Wallet className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">{lang === 'mr' ? 'खर्च नोंदवा' : 'Record Expense'}</span>
+          </Link>
+          <Link
+            to="/reports"
+            className="min-h-[44px] col-span-2 sm:col-span-1 flex items-center justify-center sm:justify-start gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 hover:bg-orange-50/60 active:bg-orange-100/60 border border-slate-200/80 hover:border-orange-300 text-slate-700 hover:text-orange-700 transition-all text-xs font-semibold"
+          >
+            <BarChart3 className="w-4 h-4 text-orange-600 shrink-0" />
+            <span className="truncate">{lang === 'mr' ? 'ताळेबंद अहवाल' : 'View Reports'}</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Primary Management Modules Grid */}
+      <div>
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+          {lang === 'mr' ? 'सोसायटी व्यवस्थापन विभाग' : 'Management Modules'}
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Module 1: Resident Registry */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between gap-4 hover:border-slate-300 transition-all">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0 border border-orange-100">
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('residentsTitle')}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  १६ मूळ सभासदांची अधिकृत यादी, सदनिका क्रमांक व संपर्क माहिती व्यवस्थापित करा.
+                </h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {lang === 'mr'
+                    ? 'सर्व सभासदांची अधिकृत यादी, सदनिका/दुकान क्रमांक आणि संपर्क तपशील व्यवस्थापित करा.'
+                    : 'Manage resident master records, flat and shop numbers, and contact details.'}
                 </p>
               </div>
             </div>
             <Link
               to="/residents"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
+              className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-orange-50 text-slate-700 hover:text-orange-700 border border-slate-200/80 transition-colors"
             >
-              <span>सभासद यादी उघडा</span>
-              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+              <span>{lang === 'mr' ? 'नोंदवही उघडा' : 'Open Registry'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-orange-600" />
             </Link>
           </div>
 
-          {/* Quick Access Card: Monthly Maintenance Engine */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+          {/* Module 2: Monthly Maintenance */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between gap-4 hover:border-slate-300 transition-all">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
                 <Calendar className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('maintenanceTitle')}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  दरमहा ₹१,००० देखभाल दर, मासिक देयके निर्मिती आणि देयक नोंदवही.
+                </h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {lang === 'mr'
+                    ? 'दरमहा ₹१,००० देखभाल दर, मासिक देयके निर्मिती आणि देयक नोंदवही.'
+                    : 'Monthly ₹1,000 billing engine, automated bill generation, and dues tracking.'}
                 </p>
               </div>
             </div>
             <Link
               to="/maintenance"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
+              className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 border border-slate-200/80 transition-colors"
             >
-              <span>मासिक देयके व्यवस्थापन</span>
-              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+              <span>{lang === 'mr' ? 'देयके व्यवस्थापन' : 'Manage Dues'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-blue-600" />
             </Link>
           </div>
 
-          {/* Quick Access Card: Manual Payments & Receipts */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+          {/* Module 3: Payments & Receipts */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between gap-4 hover:border-slate-300 transition-all">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
                 <CreditCard className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('paymentsTitle')}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  रोख व यूपीआय पेमेंट नोंदवा आणि अधिकृत पावती (SCA-YYYYMM-XXXX) तयार करा.
+                </h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {lang === 'mr'
+                    ? 'रोख, यूपीआय, बँक ट्रान्सफर पावती नोंदणी आणि अधिकृत SCA पावती निर्मिती.'
+                    : 'Record Cash, UPI, and Bank payments with official sequential receipt numbers.'}
                 </p>
               </div>
             </div>
             <Link
               to="/payments"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
+              className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 border border-slate-200/80 transition-colors"
             >
-              <span>पेमेंट व पावत्या उघडा</span>
-              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+              <span>{lang === 'mr' ? 'पावत्या व्यवस्थापन' : 'Manage Payments'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-emerald-600" />
             </Link>
           </div>
 
-          {/* Quick Access Card: Expenses & Cashbook Management */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-850 border border-slate-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+          {/* Module 4: Expenses & Cashbook */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between gap-4 hover:border-slate-300 transition-all">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/15 text-orange-400 flex items-center justify-center border border-orange-500/25 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
                 <Wallet className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('expensesTitle')}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  सोसायटी खर्च व्हाउचर्स (EXP-YYYYMM-XXXX) आणि रोख/बँक स्वतंत्र कॅशबुक.
+                </h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {lang === 'mr'
+                    ? 'सोसायटी खर्च व्हाउचर्स (EXP-YYYYMM-XXXX) आणि रोख/बँक स्वतंत्र कॅशबुक.'
+                    : 'Society expense vouchers, payee ledger, and multi-mode cashbook balance.'}
                 </p>
               </div>
             </div>
             <Link
               to="/expenses"
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all self-start"
+              className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-700 border border-slate-200/80 transition-colors"
             >
-              <span>खर्च व कॅशबुक उघडा</span>
-              <ArrowRight className="w-3.5 h-3.5 text-orange-400" />
+              <span>{lang === 'mr' ? 'कॅशबुक उघडा' : 'Open Cashbook'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-purple-600" />
             </Link>
           </div>
 
-          {/* Quick Access Card: Reports & Financial Analytics */}
-          <div className="bg-gradient-to-r from-orange-950/25 via-slate-900 to-slate-850 border border-orange-500/30 rounded-2xl p-5 shadow-lg flex flex-col justify-between gap-4">
+          {/* Module 5: Reports & Analytics */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex flex-col justify-between gap-4 hover:border-slate-300 transition-all">
             <div className="flex items-start gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-orange-500/20 text-orange-400 flex items-center justify-center border border-orange-500/35 shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
                 <BarChart3 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('reportsTitle')}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  वित्तीय ताळेबंद, आलेख, एक्सेल आणि पीडीएफ ऑडिट अहवाल डाउनलोड करा.
+                </h4>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  {lang === 'mr'
+                    ? 'वित्तीय ताळेबंद, आलेख, एक्सेल आणि पीडीएफ ऑडिट अहवाल डाउनलोड करा.'
+                    : 'Download financial ledgers, audit reports in Excel and PDF formats.'}
                 </p>
               </div>
             </div>
             <Link
               to="/reports"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-md shadow-orange-600/30 transition-all self-start"
+              className="inline-flex items-center justify-between px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-50 hover:bg-amber-50 text-slate-700 hover:text-amber-700 border border-slate-200/80 transition-colors"
             >
-              <span>अहवाल व विश्लेषण उघडा</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>{lang === 'mr' ? 'अहवाल पहा' : 'View Reports'}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-amber-600" />
             </Link>
           </div>
-        </div>
 
-        {/* System Status Grid */}
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4">
-          सिस्टम सुरक्षा व पायाभूत स्थिती (System Architecture Status)
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-400">प्रशासक मॉडेल</span>
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          {/* Security & System Architecture Card */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 text-white shadow-sm flex flex-col justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2 text-orange-400">
+                <ShieldCheck className="w-5 h-5" />
+                <h4 className="text-sm font-bold text-white">
+                  {lang === 'mr' ? 'सुरक्षा व डेटाबेस स्थिती' : 'System Security'}
+                </h4>
+              </div>
+              <ul className="text-xs text-slate-300 space-y-1.5 mt-2">
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>MongoDB 8.2 Authorization Active</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>HttpOnly Cookies & Anti-CSRF Protection</span>
+                </li>
+                <li className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>SCA Atomic Receipts Sequence</span>
+                </li>
+              </ul>
             </div>
-            <div className="text-lg font-bold text-white">एकमेव मुख्य प्रशासक</div>
-            <div className="text-xs text-slate-400 mt-1">
-              सिंगलटन की: <span className="font-mono text-orange-400 text-[10px]">SHIVNERI_SUPER_ADMIN_SINGLETON</span>
+            <div className="pt-2 border-t border-slate-700/60 text-[11px] text-slate-400">
+              Database: <span className="font-mono text-orange-400">shivneri_classic_prod_db</span>
             </div>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-400">सत्र सुरक्षा</span>
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-lg font-bold text-white">HttpOnly कुकी & CSRF</div>
-            <div className="text-xs text-slate-400 mt-1">शून्य लोकल स्टोरेज वापर (Zero Storage Token)</div>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-400">डेटाबेस नाव</span>
-              <Database className="w-4 h-4 text-blue-400" />
-            </div>
-            <div className="text-base font-bold text-white font-mono truncate">shivneri_classic_admin_db</div>
-            <div className="text-xs text-slate-400 mt-1">स्वतंत्र व सुरक्षित Atlas कनेक्शन</div>
-          </div>
-
-          <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-medium text-slate-400">पावती मानक</span>
-              <Receipt className="w-4 h-4 text-orange-400" />
-            </div>
-            <div className="text-lg font-bold text-white font-mono">SCA-YYYYMM-XXXX</div>
-            <div className="text-xs text-slate-400 mt-1">अणु (Atomic) अनुक्रम पावती रचना</div>
           </div>
         </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-800/80 px-4 py-4 text-center text-xs text-slate-500">
-        शिवनेरी क्लासिक अपार्टमेंट (ए विंग) • औरंगाबाद रोड, पंचवटी, नाशिक, महाराष्ट्र.
-      </footer>
+      </div>
     </div>
   );
 };

@@ -78,6 +78,32 @@ const paymentSchema = new mongoose.Schema(
       required: true,
       min: 0
     },
+    // Advance adjustment snapshots
+    advanceAdjustedAmount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    advanceAdjustmentDetails: [
+      {
+        advancePaymentId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'AdvancePayment'
+        },
+        receiptNumber: {
+          type: String,
+          trim: true
+        },
+        amount: {
+          type: Number,
+          min: 0
+        },
+        adjustedAt: {
+          type: Date,
+          default: Date.now
+        }
+      }
+    ],
     // Payment Details
     paymentDate: {
       type: Date,

@@ -38,6 +38,16 @@ export const requireAdminAuth = async (req, res, next) => {
       });
     }
 
+    // Verify session token version (instant revocation of previous Chairman's sessions upon transfer)
+    if (admin.tokenVersion !== undefined && decoded.tokenVersion !== undefined) {
+      if (admin.tokenVersion !== decoded.tokenVersion) {
+        return res.status(401).json({
+          success: false,
+          message: 'सत्र अवैध ठरवले गेले आहे: कृपया पुन्हा लॉगिन करा (Session invalidated: Ownership credentials changed. Please login again.)'
+        });
+      }
+    }
+
     // Attach admin document to request
     req.admin = admin;
     next();

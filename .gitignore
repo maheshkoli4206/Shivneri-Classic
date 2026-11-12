@@ -14,6 +14,13 @@ client/dist/
 *.env
 server/.env
 client/.env
+.mongo_admin_credentials
+server/.mongo_admin_credentials
+.duckdns_token
+*.duckdns_token
+server/certs/staging/
+server/certs/*.pem
+server/certs/*.key
 
 # Logs
 logs/

@@ -6,15 +6,15 @@ const LineChart = ({
   height = 240,
   dataKey = 'value',
   labelKey = 'label',
-  lineColor = '#06b6d4', // cyan-500
+  lineColor = '#0284c7', // sky-600
   fillGradient = true,
-  emptyText = 'कोणतीही माहिती उपलब्ध नाही (No Data Available)'
+  emptyText = 'No data available'
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState(null);
 
   if (!data || data.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-48 bg-slate-950/40 rounded-xl border border-slate-800 text-slate-500 text-xs">
+      <div className="flex flex-col items-center justify-center h-48 bg-slate-50 rounded-xl border border-slate-200 text-slate-500 text-xs">
         <span>{emptyText}</span>
       </div>
     );
@@ -51,7 +51,7 @@ const LineChart = ({
     <div className="w-full space-y-3">
       {title && (
         <div className="flex items-center justify-between text-xs pb-1">
-          <h4 className="font-semibold text-slate-200">{title}</h4>
+          <h4 className="font-bold text-slate-900">{title}</h4>
         </div>
       )}
 
@@ -62,7 +62,7 @@ const LineChart = ({
         >
           <defs>
             <linearGradient id={`grad-${lineColor.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={lineColor} stopOpacity="0.3" />
+              <stop offset="0%" stopColor={lineColor} stopOpacity="0.25" />
               <stop offset="100%" stopColor={lineColor} stopOpacity="0.0" />
             </linearGradient>
           </defs>
@@ -77,8 +77,8 @@ const LineChart = ({
                   y1={y}
                   x2={svgWidth - paddingRight}
                   y2={y}
-                  stroke="#334155"
-                  strokeWidth="0.5"
+                  stroke="#e2e8f0"
+                  strokeWidth="1"
                   strokeDasharray="3 3"
                 />
                 <text
@@ -88,75 +88,79 @@ const LineChart = ({
                   fill="#64748b"
                   fontSize="8"
                 >
-                  ₹{val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                  {val}%
                 </text>
               </g>
             );
           })}
 
           {/* Area Fill */}
-          {fillGradient && (
+          {fillGradient && areaD && (
             <path
               d={areaD}
               fill={`url(#grad-${lineColor.replace('#', '')})`}
             />
           )}
 
-          {/* Line Path */}
-          <path
-            d={pathD}
-            fill="none"
-            stroke={lineColor}
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+          {/* Line Stroke */}
+          {pathD && (
+            <path
+              d={pathD}
+              fill="none"
+              stroke={lineColor}
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
 
-          {/* Points & Interactive Nodes */}
-          {points.map((p, idx) => {
-            const isHovered = hoveredIdx === idx;
+          {/* Data Points */}
+          {points.map((p, i) => {
+            const isHovered = hoveredIdx === i;
             return (
               <g
-                key={idx}
-                onMouseEnter={() => setHoveredIdx(idx)}
+                key={i}
+                onMouseEnter={() => setHoveredIdx(i)}
                 onMouseLeave={() => setHoveredIdx(null)}
                 className="cursor-pointer"
               >
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={isHovered ? 6 : 3.5}
-                  fill={isHovered ? '#ffffff' : lineColor}
-                  stroke={isHovered ? lineColor : '#0f172a'}
-                  strokeWidth="2"
-                  className="transition-all duration-200"
+                  r={isHovered ? 5 : 3.5}
+                  fill="#ffffff"
+                  stroke={lineColor}
+                  strokeWidth={isHovered ? 3 : 2}
+                  className="transition-all"
                 />
 
-                {/* X-axis Label */}
+                {/* X-axis label */}
                 <text
                   x={p.x}
-                  y={paddingTop + chartHeight + 16}
+                  y={height - 10}
                   textAnchor="middle"
-                  fill={isHovered ? '#f8fafc' : '#94a3b8'}
-                  fontSize="8.5"
+                  fill={isHovered ? '#0f172a' : '#64748b'}
+                  fontSize="9"
                   fontWeight={isHovered ? 'bold' : 'normal'}
                 >
-                  {p.data[labelKey] || p.data.monthNameMarathi || p.data.month}
+                  {p.data[labelKey] || `M${i + 1}`}
                 </text>
               </g>
             );
           })}
         </svg>
 
-        {/* Hover Tooltip Overlay */}
-        {hoveredIdx !== null && data[hoveredIdx] && (
-          <div className="absolute top-2 right-2 bg-slate-900/95 border border-slate-700 p-2.5 rounded-lg shadow-xl text-xs space-y-0.5 pointer-events-none z-10">
-            <p className="font-bold text-slate-200">
-              {data[hoveredIdx][labelKey] || data[hoveredIdx].monthNameMarathi}
-            </p>
-            <p className="font-mono text-cyan-400 font-bold">
-              ₹{Number(data[hoveredIdx][dataKey] || 0).toLocaleString('en-IN')}
-            </p>
+        {/* Hover Tooltip Popup */}
+        {hoveredIdx !== null && points[hoveredIdx] && (
+          <div
+            className="absolute top-2 left-1/2 -translate-x-1/2 bg-slate-900 border border-slate-700 text-white rounded-lg px-3 py-1 text-[11px] shadow-xl pointer-events-none z-10"
+          >
+            <span className="font-bold text-slate-300">
+              {points[hoveredIdx].data[labelKey]}:{' '}
+            </span>
+            <span className="text-cyan-400 font-bold">
+              {points[hoveredIdx].data[dataKey]}%
+            </span>
           </div>
         )}
       </div>

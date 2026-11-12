@@ -3,6 +3,7 @@ import MaintenanceDue from '../models/MaintenanceDue.js';
 import Payment from '../models/Payment.js';
 import Expense from '../models/Expense.js';
 import Resident from '../models/Resident.js';
+import AdvancePayment from '../models/AdvancePayment.js';
 import CashbookOpeningBalance from '../models/CashbookOpeningBalance.js';
 
 const MONTH_NAMES_MR = [
@@ -170,11 +171,42 @@ export async function getDashboardOverview(filters = {}) {
   const totalOutstanding = duesSummary?.totalOutstanding || 0;
   const totalExpenses = expenseSummary?.totalExpenses || 0;
 
+  // 5. Advance Payments Aggregation (Non-cancelled)
+  const advanceMatch = { status: { $ne: 'CANCELLED' } };
+  if (startDate || endDate) {
+    advanceMatch.paymentDate = {};
+    if (startDate) advanceMatch.paymentDate.$gte = new Date(startDate);
+    if (endDate) {
+      const e = new Date(endDate);
+      e.setHours(23, 59, 59, 999);
+      advanceMatch.paymentDate.$lte = e;
+    }
+  }
+
+  const [advanceSummary] = await AdvancePayment.aggregate([
+    { $match: advanceMatch },
+    {
+      $group: {
+        _id: null,
+        totalAdvanceReceived: { $sum: '$amountReceived' },
+        totalAdvanceUtilized: { $sum: '$usedAmount' },
+        totalAdvanceBalance: { $sum: '$availableBalance' },
+        activeAdvanceCount: { $sum: 1 }
+      }
+    }
+  ]) || [{ totalAdvanceReceived: 0, totalAdvanceUtilized: 0, totalAdvanceBalance: 0, activeAdvanceCount: 0 }];
+
+  const advData = advanceSummary || { totalAdvanceReceived: 0, totalAdvanceUtilized: 0, totalAdvanceBalance: 0, activeAdvanceCount: 0 };
+  const totalAdvanceReceived = advData.totalAdvanceReceived || 0;
+  const totalAdvanceUtilized = advData.totalAdvanceUtilized || 0;
+  const availableAdvanceBalance = advData.totalAdvanceBalance || 0;
+  const totalCashInflow = totalCollected + totalAdvanceReceived;
+
   const collectionPercentage = totalBilled > 0
     ? Math.round((totalCollected / totalBilled) * 10000) / 100
     : 0;
 
-  const netSurplusDeficit = totalCollected - totalExpenses;
+  const netSurplusDeficit = totalCashInflow - totalExpenses;
 
   // 5. Resident status breakdown (Distinct residents)
   const activeResidents = await Resident.find({ status: 'ACTIVE' }).select('_id fullNameMarathi flatNumber wing');
@@ -213,6 +245,13 @@ export async function getDashboardOverview(filters = {}) {
       collectionPercentage,
       totalExpenses,
       netSurplusDeficit,
+      totalCashInflow,
+      advance: {
+        totalReceived: totalAdvanceReceived,
+        totalUtilized: totalAdvanceUtilized,
+        availableBalance: availableAdvanceBalance,
+        activeCount: advData.activeAdvanceCount || 0
+      },
       duesCounts: {
         totalBills: duesSummary?.totalBillsCount || 0,
         fullPaidBills: duesSummary?.fullPaidBillsCount || 0,
@@ -329,6 +368,9 @@ export async function getMaintenanceReport(filters = {}) {
         wing: resDoc.wing,
         status: resDoc.status,
         mobileNumber: resDoc.mobileNumber || '-',
+        advanceBalance: resDoc.advanceBalance || 0,
+        totalAdvanceReceived: resDoc.totalAdvanceReceived || 0,
+        totalAdvanceUtilized: resDoc.totalAdvanceUtilized || 0,
         totalBilled,
         totalPaid,
         totalOutstanding,
@@ -599,7 +641,7 @@ export async function getFinancialSummaryReport(filters = {}) {
   }
 
   // 3. Aggregations by mode
-  const [incomeByModeRaw, expenseByModeRaw] = await Promise.all([
+  const [incomeByModeRaw, expenseByModeRaw, advanceByModeRaw] = await Promise.all([
     Payment.aggregate([
       { $match: paymentFilter },
       { $group: { _id: '$paymentMethod', total: { $sum: '$amountReceived' }, count: { $sum: 1 } } }
@@ -607,12 +649,19 @@ export async function getFinancialSummaryReport(filters = {}) {
     Expense.aggregate([
       { $match: expenseFilter },
       { $group: { _id: '$paymentMethod', total: { $sum: '$amount' }, count: { $sum: 1 } } }
+    ]),
+    AdvancePayment.aggregate([
+      { $match: { status: { $ne: 'CANCELLED' } } },
+      { $group: { _id: '$paymentMethod', total: { $sum: '$amountReceived' }, count: { $sum: 1 } } }
     ])
   ]);
 
   const incomeMap = { CASH: 0, BANK_TRANSFER: 0, UPI: 0, CHEQUE: 0 };
   incomeByModeRaw.forEach(i => {
-    if (incomeMap[i._id] !== undefined) incomeMap[i._id] = i.total;
+    if (incomeMap[i._id] !== undefined) incomeMap[i._id] += i.total;
+  });
+  advanceByModeRaw.forEach(i => {
+    if (incomeMap[i._id] !== undefined) incomeMap[i._id] += i.total;
   });
 
   const expenseMap = { CASH: 0, BANK_TRANSFER: 0, UPI: 0, CHEQUE: 0 };

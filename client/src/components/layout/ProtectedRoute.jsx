@@ -9,9 +9,9 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
-        <Loader2 className="w-10 h-10 text-orange-500 animate-spin mb-4" />
-        <p className="text-slate-400 text-sm font-medium">
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <Loader2 className="w-10 h-10 text-orange-600 animate-spin mb-4" />
+        <p className="text-slate-600 text-sm font-medium">
           सत्र पडताळणी सुरू आहे... (Verifying secure session...)
         </p>
       </div>
@@ -26,4 +26,3 @@ const ProtectedRoute = ({ children }) => {
 };
 
 export default ProtectedRoute;
-

@@ -61,12 +61,21 @@ export const createExpense = async (req, res) => {
     // 4. Generate Atomic Sequential Voucher Number: EXP-YYYYMM-XXXX
     const voucherNumber = await generateAtomicVoucherNumber(year, month);
 
+    // 4.1 Resolve category if ObjectId was passed
+    let resolvedCategory = String(category).trim().toUpperCase();
+    if (mongoose.isValidObjectId(category)) {
+      const catDoc = await ExpenseCategory.findById(category);
+      if (catDoc) {
+        resolvedCategory = (catDoc.code || catDoc.nameEnglish || '').toUpperCase();
+      }
+    }
+
     // 5. Persist Expense Document
     const expense = new Expense({
       voucherNumber,
       titleMarathi: String(titleMarathi).trim(),
       titleEnglish: titleEnglish ? String(titleEnglish).trim() : '',
-      category: String(category).trim().toUpperCase(),
+      category: resolvedCategory,
       amount: numAmount,
       expenseDate: dateObj,
       month,
@@ -140,7 +149,14 @@ export const getExpenses = async (req, res) => {
     const filter = {};
 
     if (category) {
-      filter.category = String(category).trim().toUpperCase();
+      let resolvedCat = String(category).trim().toUpperCase();
+      if (mongoose.isValidObjectId(category)) {
+        const catDoc = await ExpenseCategory.findById(category);
+        if (catDoc) {
+          resolvedCat = (catDoc.code || catDoc.nameEnglish || '').toUpperCase();
+        }
+      }
+      filter.category = resolvedCat;
     }
 
     if (paymentMethod) {

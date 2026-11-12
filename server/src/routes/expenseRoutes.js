@@ -79,6 +79,7 @@ const cancelExpenseValidation = [
 router.post('/', createExpenseValidation, createExpense);
 router.get('/', getExpenses);
 router.get('/categories', getCategories);
+router.get('/categories/list', getCategories);
 router.post('/categories', addCategory);
 router.get('/:id', getExpenseById);
 router.patch('/:id/cancel', cancelExpenseValidation, cancelExpense);

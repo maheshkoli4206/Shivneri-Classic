@@ -72,38 +72,44 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
   const isCancelled = expense.isCancelled || expense.status === 'CANCELLED';
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden text-slate-100 my-8">
+    <div
+      className="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4 md:p-6 overflow-hidden"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="relative w-full max-w-2xl max-h-[90vh] bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-900 animate-in fade-in duration-150">
         {/* Modal Top Actions */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950/80">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-semibold text-slate-300">
+        <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-slate-800 bg-slate-900 text-white z-10 print:hidden">
+          <div className="flex items-center gap-2 min-w-0 pr-2">
+            <span className="text-xs sm:text-sm font-semibold truncate">
               {isMr ? 'अधिकृत खर्च व्हाउचर' : 'Official Expense Voucher'}
             </span>
-            <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/30">
+            <span className="hidden xs:inline-block font-mono text-[11px] sm:text-xs px-2 sm:px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-300 border border-orange-500/30 shrink-0">
               {expense.voucherNumber}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all"
+              className="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors cursor-pointer"
             >
-              <Printer className="w-4 h-4" />
-              <span>{isMr ? 'प्रिंट करा' : 'Print'}</span>
+              <Printer className="w-4 h-4 text-orange-400" />
+              <span className="hidden sm:inline">{isMr ? 'प्रिंट करा' : 'Print'}</span>
             </button>
             <button
               onClick={handleDownloadPDF}
               disabled={downloading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-orange-600 hover:bg-orange-500 text-white shadow-sm transition-all disabled:opacity-50"
+              className="min-h-[44px] inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-orange-600 hover:bg-orange-500 text-white shadow-sm transition-colors disabled:opacity-50 cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>{downloading ? (isMr ? 'तयार होत आहे...' : 'Generating...') : 'PDF'}</span>
+              <span className="hidden sm:inline">{downloading ? (isMr ? 'तयार होत आहे...' : 'Generating...') : 'PDF'}</span>
+              <span className="sm:hidden">{downloading ? '...' : 'PDF'}</span>
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all ml-1"
+              className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-0.5 sm:ml-1 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -111,44 +117,51 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
         </div>
 
         {/* Printable Voucher Card Container */}
-        <div className="p-6 overflow-y-auto max-h-[calc(85vh-120px)] bg-slate-950">
+        <div className="flex-1 min-h-0 p-3 sm:p-6 overflow-y-auto overscroll-contain bg-slate-100 flex justify-center print:overflow-visible print:p-0 print:bg-white print:max-h-none print:h-auto">
           <div
             ref={voucherRef}
-            className="bg-white text-slate-900 p-8 rounded-xl shadow-lg border border-slate-200 text-sm max-w-xl mx-auto printable-voucher"
+            className="bg-white text-slate-900 p-5 sm:p-8 rounded-xl shadow-md border-2 border-orange-600 text-sm max-w-xl w-full mx-auto printable-voucher my-auto sm:my-0"
           >
             {/* Header */}
-            <div className="text-center border-b-2 border-orange-600 pb-4">
-              <h2 className="text-xl font-bold text-slate-900 tracking-wide font-devanagari">
-                शिवनेरी क्लासिक अपार्टमेंट (Shivneri Classic Apartment)
-              </h2>
-              <p className="text-xs font-semibold text-orange-700 mt-0.5">
-                ए विंग (A Wing) • औरंगाबाद रोड, पंचवटी, नाशिक - ४२२००३
-              </p>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                अधिकृत खर्च व्हाउचर / Payment Expense Voucher
-              </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 border-b-2 border-orange-500 pb-4 text-center sm:text-left">
+              <img
+                src="/building-logo.png"
+                alt="Shivneri Classic Logo"
+                className="w-14 h-14 rounded-full object-cover border-2 border-amber-400/80 shadow-md shrink-0 bg-white"
+              />
+              <div>
+                <h2 className="text-lg sm:text-xl font-black text-orange-950 tracking-wide font-devanagari">
+                  {isMr ? 'शिवनेरी क्लासिक अपार्टमेंट – ए विंग' : 'Shivneri Classic Apartment – A Wing'}
+                </h2>
+                <p className="text-xs font-bold text-orange-700 mt-0.5">
+                  {isMr ? 'कपालेश्वर नगर, औरंगाबाद रोड, पंचवटी, नाशिक' : 'Kapaleshwar Nagar, Aurangabad Road, Panchavati, Nashik'}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  {isMr ? 'अधिकृत खर्च व्हाउचर' : 'Official Payment Expense Voucher'}
+                </p>
+              </div>
             </div>
 
             {/* Voucher Meta Strip */}
-            <div className="flex justify-between items-center py-3 border-b border-dashed border-slate-300 text-xs">
+            <div className="flex justify-between items-center py-3 border-b border-dashed border-slate-300 text-xs mt-2">
               <div>
-                <span className="text-slate-500">{isMr ? 'व्हाउचर क्र.' : 'Voucher No.'}: </span>
-                <span className="font-bold font-mono text-slate-800">{expense.voucherNumber}</span>
+                <span className="text-slate-500">{isMr ? 'व्हाउचर क्र.:' : 'Voucher No.:'} </span>
+                <span className="font-bold font-mono text-slate-900">{expense.voucherNumber}</span>
               </div>
               <div>
-                <span className="text-slate-500">{isMr ? 'दिनांक' : 'Date'}: </span>
-                <span className="font-semibold text-slate-800">{formattedDate}</span>
+                <span className="text-slate-500">{isMr ? 'दिनांक:' : 'Date:'} </span>
+                <span className="font-semibold text-slate-900">{formattedDate}</span>
               </div>
               <div>
                 {isCancelled ? (
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded border border-red-300">
                     <AlertTriangle className="w-3 h-3" />
-                    {isMr ? 'रद्दबातल (CANCELLED)' : 'CANCELLED'}
+                    {isMr ? 'रद्दबातल' : 'CANCELLED'}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                     <CheckCircle className="w-3 h-3" />
-                    {isMr ? 'मान्य (COMPLETED)' : 'COMPLETED'}
+                    {isMr ? 'मान्य' : 'VALID'}
                   </span>
                 )}
               </div>
@@ -171,40 +184,40 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
             {/* Voucher Body Details */}
             <div className="py-4 space-y-3 text-xs">
               <div className="flex justify-between border-b border-slate-100 pb-2">
-                <span className="text-slate-600">{isMr ? 'खर्चाचे शीर्षक (Title)' : 'Expense Title'}:</span>
-                <span className="font-semibold text-slate-900 text-right">
+                <span className="text-slate-500 font-medium">{isMr ? 'खर्चाचे शीर्षक:' : 'Expense Title:'}</span>
+                <span className="font-bold text-slate-900 text-right">
                   {expense.titleMarathi || expense.titleEnglish}
-                  {expense.titleEnglish && expense.titleMarathi && (
+                  {expense.titleEnglish && expense.titleMarathi && isMr && (
                     <span className="block text-[11px] font-normal text-slate-500">({expense.titleEnglish})</span>
                   )}
                 </span>
               </div>
 
               <div className="flex justify-between border-b border-slate-100 pb-2">
-                <span className="text-slate-600">{isMr ? 'खर्च वर्गवारी (Category)' : 'Category'}:</span>
-                <span className="font-medium text-slate-800">{expense.category}</span>
+                <span className="text-slate-500 font-medium">{isMr ? 'खर्च वर्गवारी:' : 'Category:'}</span>
+                <span className="font-semibold text-slate-800">{expense.category}</span>
               </div>
 
               <div className="flex justify-between border-b border-slate-100 pb-2">
-                <span className="text-slate-600">{isMr ? 'पैसे स्वीकारणारे / विक्रेता (Payee)' : 'Payee / Vendor'}:</span>
-                <span className="font-semibold text-slate-900">{expense.payeeName}</span>
+                <span className="text-slate-500 font-medium">{isMr ? 'पैसे स्वीकारणारे / विक्रेता:' : 'Payee / Vendor:'}</span>
+                <span className="font-bold text-slate-900">{expense.payeeName}</span>
               </div>
 
               <div className="flex justify-between border-b border-slate-100 pb-2">
-                <span className="text-slate-600">{isMr ? 'पेमेंट पद्धत (Payment Method)' : 'Payment Method'}:</span>
-                <span className="font-medium text-slate-800">{methodText}</span>
+                <span className="text-slate-500 font-medium">{isMr ? 'पेमेंट पद्धत:' : 'Payment Mode:'}</span>
+                <span className="font-semibold text-slate-800">{methodText}</span>
               </div>
 
               {expense.transactionRef && (
                 <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-600">{isMr ? 'व्यवहार संदर्भ / UTR / धनादेश क्र.' : 'Transaction Ref / UTR / Cheque No.'}:</span>
+                  <span className="text-slate-500 font-medium">{isMr ? 'व्यवहार संदर्भ / UTR / धनादेश क्र.:' : 'Txn Ref / UTR / Cheque No.:'}</span>
                   <span className="font-mono text-slate-800">{expense.transactionRef}</span>
                 </div>
               )}
 
               {expense.description && (
                 <div className="flex justify-between border-b border-slate-100 pb-2">
-                  <span className="text-slate-600">{isMr ? 'तपशील / शेरा (Description)' : 'Description'}:</span>
+                  <span className="text-slate-500 font-medium">{isMr ? 'तपशील / शेरा:' : 'Description:'}</span>
                   <span className="text-slate-700 text-right max-w-[280px]">{expense.description}</span>
                 </div>
               )}
@@ -212,14 +225,14 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
               {/* Total Amount Box */}
               <div className="mt-4 p-3.5 bg-orange-50 border border-orange-200 rounded-xl flex items-center justify-between">
                 <div>
-                  <span className="text-xs font-semibold text-orange-950 uppercase tracking-wider">
+                  <span className="text-xs font-bold text-orange-950 uppercase tracking-wider">
                     {isMr ? 'खर्च झालेली एकूण रक्कम' : 'Total Expense Amount'}
                   </span>
-                  <p className="text-[11px] text-orange-800">
+                  <p className="text-[11px] text-orange-700">
                     {isMr ? 'सोसायटी फंडातून अदा' : 'Disbursed from Society Account'}
                   </p>
                 </div>
-                <div className="text-2xl font-black text-orange-900 font-mono">
+                <div className="text-2xl font-black text-orange-700 font-mono">
                   ₹{Number(expense.amount).toLocaleString('en-IN')}
                 </div>
               </div>
@@ -229,8 +242,8 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
             <div className="mt-8 pt-6 border-t border-slate-200 grid grid-cols-2 text-xs">
               <div>
                 <p className="text-[11px] text-slate-500">{isMr ? 'पैसे स्वीकारणाऱ्याची स्वाक्षरी' : "Payee's Signature"}:</p>
-                <div className="h-10"></div>
-                <p className="text-xs font-medium text-slate-700">({expense.payeeName})</p>
+                <div className="h-8"></div>
+                <p className="text-xs font-semibold text-slate-800">({expense.payeeName})</p>
               </div>
 
               <div className="text-right">
@@ -238,12 +251,12 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>{isMr ? 'अधिकृत स्वाक्षरी' : 'Authorized Signatory'}</span>
                 </div>
-                <div className="h-6"></div>
+                <div className="h-4"></div>
                 <p className="text-xs font-bold text-slate-900 font-devanagari">
-                  श्री ल.रा. कोळी (Shri Laxman Koli)
+                  {isMr ? 'श्री ल.रा. कोळी' : 'Shri Laxman Koli'}
                 </p>
                 <p className="text-[11px] text-slate-600">
-                  {isMr ? 'अध्यक्ष / सचिव - शिवनेरी क्लासिक' : 'Chairman / Secretary - Shivneri Classic'}
+                  {isMr ? 'अध्यक्ष / सचिव - शिवनेरी क्लासिक' : 'Chairman / Building Secretary'}
                 </p>
               </div>
             </div>
@@ -261,4 +274,3 @@ const ExpenseDetailModal = ({ isOpen, onClose, expense }) => {
 };
 
 export default ExpenseDetailModal;
-

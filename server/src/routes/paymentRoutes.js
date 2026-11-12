@@ -7,8 +7,18 @@ import {
   getPaymentById,
   downloadReceiptPDF,
   cancelPayment,
-  getPaymentDashboardSummary
+  getPaymentDashboardSummary,
+  getReceiptByDueId,
+  recordAdvancePayment,
+  getAdvancePayments,
+  getResidentAdvanceSummary,
+  applyAdvanceToBill,
+  cancelAdvancePayment,
+  downloadAdvanceReceiptPDF,
+  getAdvanceLedger,
+  getResidentFinancialHistory
 } from '../controllers/paymentController.js';
+import { getMaintenanceDues } from '../controllers/maintenanceController.js';
 
 const router = Router();
 
@@ -28,7 +38,7 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-// Validation for recording a payment
+// Validation for recording a regular payment
 const recordPaymentValidation = [
   body('maintenanceDueId')
     .notEmpty()
@@ -39,7 +49,7 @@ const recordPaymentValidation = [
     .notEmpty()
     .withMessage('जमा रक्कम आवश्यक आहे (Amount is required)')
     .isFloat({ min: 0.01 })
-    .withMessage('जमा रक्कम शून्यापेक्षा जास्त असावी (Amount must be greater than zero)'),
+    .withMessage('जमा रक्कम किमान ₹०.०१ असावी (Amount must be at least ₹0.01)'),
   body('paymentMethod')
     .notEmpty()
     .withMessage('पेमेंट पद्धत आवश्यक आहे (Payment method is required)')
@@ -61,6 +71,53 @@ const recordPaymentValidation = [
   handleValidationErrors
 ];
 
+// Validation for advance payment recording
+const recordAdvanceValidation = [
+  body('residentId')
+    .notEmpty()
+    .withMessage('सभासद निवडणे आवश्यक आहे (Resident is required)')
+    .isMongoId()
+    .withMessage('अवैध सभासद ओळख क्रमांक (Invalid resident ID)'),
+  body('amountReceived')
+    .notEmpty()
+    .withMessage('अ‍ॅडव्हान्स रक्कम आवश्यक आहे (Amount is required)')
+    .isFloat({ min: 1 })
+    .withMessage('अ‍ॅडव्हान्स रक्कम किमान ₹1 असावी (Amount must be at least 1)'),
+  body('paymentMethod')
+    .notEmpty()
+    .withMessage('पेमेंट पद्धत आवश्यक आहे (Payment method is required)')
+    .isIn(['CASH', 'UPI', 'BANK_TRANSFER', 'CHEQUE'])
+    .withMessage('अवैध पेमेंट पद्धत (Invalid payment method)'),
+  body('paymentDate')
+    .optional()
+    .isISO8601()
+    .withMessage('अवैध पेमेंट तारीख (Invalid payment date)'),
+  body('transactionRef')
+    .optional()
+    .trim(),
+  body('remarks')
+    .optional()
+    .trim(),
+  handleValidationErrors
+];
+
+// Validation for applying advance to bill
+const applyAdvanceValidation = [
+  body('maintenanceDueId')
+    .notEmpty()
+    .withMessage('मासिक देयक निवडणे आवश्यक आहे (Maintenance due is required)')
+    .isMongoId()
+    .withMessage('अवैध मासिक देयक ओळख क्रमांक'),
+  body('amountToApply')
+    .optional()
+    .isFloat({ min: 0.01 })
+    .withMessage('लागू करावयाची रक्कम शून्यापेक्षा जास्त असावी'),
+  body('remarks')
+    .optional()
+    .trim(),
+  handleValidationErrors
+];
+
 // Validation for payment cancellation
 const cancelValidation = [
   param('id')
@@ -74,9 +131,30 @@ const cancelValidation = [
   handleValidationErrors
 ];
 
-// Payment recording & dashboard endpoints
+// Advance payment endpoints (must precede /:id)
+router.post('/advance', recordAdvanceValidation, recordAdvancePayment);
+router.get('/advance', getAdvancePayments);
+router.get('/advance/ledger', getAdvanceLedger);
+router.get('/advance/resident/:residentId', getResidentAdvanceSummary);
+router.post('/advance/apply', applyAdvanceValidation, applyAdvanceToBill);
+router.get('/advance/:id/receipt-pdf', downloadAdvanceReceiptPDF);
+router.patch('/advance/:id/cancel', cancelValidation, cancelAdvancePayment);
+
+// Regular payment recording & dashboard endpoints
 router.post('/record', recordPaymentValidation, recordPayment);
 router.get('/dashboard/summary', getPaymentDashboardSummary);
+router.get('/summary', getPaymentDashboardSummary);
+
+// Resident financial history & maintenance dues endpoints
+router.get('/resident/:residentId/history', getResidentFinancialHistory);
+router.get('/resident/:residentId/dues', (req, res, next) => {
+  req.query.residentId = req.params.residentId;
+  return getMaintenanceDues(req, res, next);
+});
+
+// Dues receipt lookup & PDF
+router.get('/due/:dueId/receipt', getReceiptByDueId);
+router.get('/due/:id/receipt-pdf', downloadReceiptPDF);
 
 // Payment history & search
 router.get('/', getPayments);

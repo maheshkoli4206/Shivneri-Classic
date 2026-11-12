@@ -2,7 +2,12 @@
   "name": "shivneri-classic-app",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Shivneri Classic Apartment - A Wing Management System (MERN Stack)",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "scripts": {
     "dev": "concurrently -n \"SERVER,CLIENT\" -c \"blue,green\" \"npm run server\" \"npm run client\"",
     "client": "npm --prefix client run dev",
@@ -11,10 +16,14 @@
     "server:start": "npm --prefix server run start",
     "seed:admin": "npm --prefix server run seed:admin",
     "seed:residents": "npm --prefix server run seed:residents",
+    "migrate:cloud": "node server/scripts/migrateToCloud.mjs",
     "build": "npm --prefix client run build",
     "test": "node -e \"console.log('Project configuration verified: ok')\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "puppeteer-core": "^25.16.0"
   }
 }

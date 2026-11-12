@@ -48,6 +48,35 @@ const adminSchema = new mongoose.Schema(
       default: 'SUPER_ADMIN',
       immutable: true
     },
+    contactNumber: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    recoveryEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: ''
+    },
+    tokenVersion: {
+      type: Number,
+      default: 0
+    },
+    tenureHistory: [
+      {
+        fullNameMarathi: { type: String, required: true },
+        fullNameEnglish: { type: String, required: true },
+        username: { type: String, required: true },
+        designation: { type: String, default: 'Chairman / Building Secretary' },
+        contactNumber: { type: String, default: '' },
+        tenureStartDate: { type: Date, default: Date.now },
+        tenureEndDate: { type: Date, default: Date.now },
+        handoverReason: { type: String, required: true },
+        resolutionNumber: { type: String, default: '' },
+        transferredAt: { type: Date, default: Date.now }
+      }
+    ],
     lastLogin: {
       type: Date,
       default: null

@@ -1,0 +1,617 @@
+{
+  "timestamp": "2026-11-04T03:38:26.948Z",
+  "steps": {
+    "task1": {
+      "status": "PASS",
+      "productionDatabase": "shivneri_classic_admin_db",
+      "host": "localhost",
+      "port": 27017
+    },
+    "task2": {
+      "status": "PASS",
+      "activeWritesCount": 0,
+      "serverListeningPortsChecked": [
+        5000,
+        5006,
+        5007,
+        5009,
+        5011,
+        5012,
+        5173
+      ],
+      "backgroundTasksActive": 0
+    },
+    "task3": {
+      "status": "PASS",
+      "backupDirectory": "D:\\Shivneri Classic App\\backups\\prelaunch_20261104_090827",
+      "archivePath": "D:\\Shivneri Classic App\\backups\\prelaunch_20261104_090827\\shivneri_classic_admin_db_backup.gz",
+      "archiveFileName": "shivneri_classic_admin_db_backup.gz",
+      "archiveSize": 8666,
+      "archiveSizeBytesFormatted": "8.46 KB",
+      "createdAt": "2026-11-04T03:38:28.347Z"
+    },
+    "task4": {
+      "status": "PASS",
+      "sha256": "dda990926ac61ae830a6e8f81a56c54214243f6080b50ee7ef4e9b3549b9f1ec",
+      "checksumPath": "D:\\Shivneri Classic App\\backups\\prelaunch_20261104_090827\\checksum.sha256",
+      "verifiedMatch": true
+    },
+    "task5": {
+      "status": "PASS",
+      "targetVerifyDatabase": "shivneri_classic_backup_verify_db",
+      "isolatedRestorationSuccessful": true
+    },
+    "task6": {
+      "status": "PASS",
+      "collectionParity": true,
+      "countComparison": {
+        "admins": {
+          "production": 1,
+          "verified": 1,
+          "match": true
+        },
+        "auditlogs": {
+          "production": 129,
+          "verified": 129,
+          "match": true
+        },
+        "cashbookopeningbalances": {
+          "production": 1,
+          "verified": 1,
+          "match": true
+        },
+        "counters": {
+          "production": 2,
+          "verified": 2,
+          "match": true
+        },
+        "expensecategories": {
+          "production": 0,
+          "verified": 0,
+          "match": true
+        },
+        "expenses": {
+          "production": 5,
+          "verified": 5,
+          "match": true
+        },
+        "maintenanceconfigs": {
+          "production": 1,
+          "verified": 1,
+          "match": true
+        },
+        "maintenancedues": {
+          "production": 32,
+          "verified": 32,
+          "match": true
+        },
+        "payments": {
+          "production": 7,
+          "verified": 7,
+          "match": true
+        },
+        "residents": {
+          "production": 16,
+          "verified": 16,
+          "match": true
+        }
+      },
+      "indexComparison": {
+        "admins": {
+          "indexCount": 3,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "singletonKey_1",
+              "key": {
+                "singletonKey": 1
+              },
+              "unique": true
+            },
+            {
+              "name": "username_1",
+              "key": {
+                "username": 1
+              },
+              "unique": true
+            }
+          ],
+          "match": true
+        },
+        "auditlogs": {
+          "indexCount": 4,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "action_1_createdAt_-1",
+              "key": {
+                "action": 1,
+                "createdAt": -1
+              },
+              "unique": false
+            },
+            {
+              "name": "entityType_1_entityId_1",
+              "key": {
+                "entityType": 1,
+                "entityId": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "performedByAdminId_1",
+              "key": {
+                "performedByAdminId": 1
+              },
+              "unique": false
+            }
+          ],
+          "match": true
+        },
+        "cashbookopeningbalances": {
+          "indexCount": 2,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "singletonKey_1",
+              "key": {
+                "singletonKey": 1
+              },
+              "unique": true
+            }
+          ],
+          "match": true
+        },
+        "counters": {
+          "indexCount": 1,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            }
+          ],
+          "match": true
+        },
+        "expensecategories": {
+          "indexCount": 2,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "code_1",
+              "key": {
+                "code": 1
+              },
+              "unique": true
+            }
+          ],
+          "match": true
+        },
+        "expenses": {
+          "indexCount": 9,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "category_1",
+              "key": {
+                "category": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "expenseDate_-1",
+              "key": {
+                "expenseDate": -1
+              },
+              "unique": false
+            },
+            {
+              "name": "expenseDate_1",
+              "key": {
+                "expenseDate": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "idempotencyKey_1",
+              "key": {
+                "idempotencyKey": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "month_1_year_1",
+              "key": {
+                "month": 1,
+                "year": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "paymentMethod_1",
+              "key": {
+                "paymentMethod": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "status_1",
+              "key": {
+                "status": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "voucherNumber_1",
+              "key": {
+                "voucherNumber": 1
+              },
+              "unique": true
+            }
+          ],
+          "match": true
+        },
+        "maintenanceconfigs": {
+          "indexCount": 2,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "singletonKey_1",
+              "key": {
+                "singletonKey": 1
+              },
+              "unique": true
+            }
+          ],
+          "match": true
+        },
+        "maintenancedues": {
+          "indexCount": 4,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "month_1_year_1",
+              "key": {
+                "month": 1,
+                "year": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "residentId_1_month_1_year_1",
+              "key": {
+                "residentId": 1,
+                "month": 1,
+                "year": 1
+              },
+              "unique": true
+            },
+            {
+              "name": "status_1",
+              "key": {
+                "status": 1
+              },
+              "unique": false
+            }
+          ],
+          "match": true
+        },
+        "payments": {
+          "indexCount": 9,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "idempotencyKey_1",
+              "key": {
+                "idempotencyKey": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "maintenanceDueId_1",
+              "key": {
+                "maintenanceDueId": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "month_1_year_1",
+              "key": {
+                "month": 1,
+                "year": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "paymentDate_-1",
+              "key": {
+                "paymentDate": -1
+              },
+              "unique": false
+            },
+            {
+              "name": "receiptNumber_1",
+              "key": {
+                "receiptNumber": 1
+              },
+              "unique": true
+            },
+            {
+              "name": "residentId_1",
+              "key": {
+                "residentId": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "residentId_1_paymentDate_-1",
+              "key": {
+                "residentId": 1,
+                "paymentDate": -1
+              },
+              "unique": false
+            },
+            {
+              "name": "status_1",
+              "key": {
+                "status": 1
+              },
+              "unique": false
+            }
+          ],
+          "match": true
+        },
+        "residents": {
+          "indexCount": 4,
+          "indexes": [
+            {
+              "name": "_id_",
+              "key": {
+                "_id": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "flatNumber_1_wing_1",
+              "key": {
+                "flatNumber": 1,
+                "wing": 1
+              },
+              "unique": true
+            },
+            {
+              "name": "fullNameMarathi_1",
+              "key": {
+                "fullNameMarathi": 1
+              },
+              "unique": false
+            },
+            {
+              "name": "status_1",
+              "key": {
+                "status": 1
+              },
+              "unique": false
+            }
+          ],
+          "match": true
+        }
+      }
+    },
+    "task7": {
+      "status": "PASS",
+      "adminChecks": {
+        "idMatch": true,
+        "fullNameMarathiMatch": true,
+        "fullNameEnglishMatch": true,
+        "usernameMatch": true,
+        "designationMatch": true,
+        "roleMatch": true,
+        "singletonKeyMatch": true,
+        "passwordHashMatch": true
+      },
+      "residentPairwiseAudit": [
+        {
+          "index": 1,
+          "id": "6aea0df257eca7f6b5561d9d",
+          "fullNameMarathi": "श्री संदीप पाटील",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 2,
+          "id": "6aea0df257eca7f6b5561da1",
+          "fullNameMarathi": "श्री ल.रा. कोळी",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 3,
+          "id": "6aea0df257eca7f6b5561da4",
+          "fullNameMarathi": "श्री नंदकुमार तासकर",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 4,
+          "id": "6aea0df257eca7f6b5561da7",
+          "fullNameMarathi": "श्री सिताराम जोपळे",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 5,
+          "id": "6aea0df257eca7f6b5561dab",
+          "fullNameMarathi": "श्री विठ्ठल चत्तर",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 6,
+          "id": "6aea0df257eca7f6b5561dae",
+          "fullNameMarathi": "श्री सतिष पवार",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 7,
+          "id": "6aea0df257eca7f6b5561db2",
+          "fullNameMarathi": "श्री निलेश सानप",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 8,
+          "id": "6aea0df257eca7f6b5561db5",
+          "fullNameMarathi": "श्री पंकज देवरे",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 9,
+          "id": "6aea0df257eca7f6b5561db8",
+          "fullNameMarathi": "श्री जितेंद्र सूर्यवंशी",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 10,
+          "id": "6aea0df257eca7f6b5561dbb",
+          "fullNameMarathi": "श्री रविंद्र संगमनेरे",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 11,
+          "id": "6aea0df257eca7f6b5561dbe",
+          "fullNameMarathi": "श्री पकंज चंद्रभान पवार",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 12,
+          "id": "6aea0df257eca7f6b5561dc1",
+          "fullNameMarathi": "श्री विलास शिरसाठ",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 13,
+          "id": "6aea0df257eca7f6b5561dc4",
+          "fullNameMarathi": "श्री आशिष महाजन",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 14,
+          "id": "6aea0df257eca7f6b5561dc7",
+          "fullNameMarathi": "श्री अजित कदम",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 15,
+          "id": "6aea0df257eca7f6b5561dca",
+          "fullNameMarathi": "श्री विनय दत्ता मानकर",
+          "status": "ACTIVE",
+          "match": true
+        },
+        {
+          "index": 16,
+          "id": "6aea0df257eca7f6b5561dcd",
+          "fullNameMarathi": "श्री अे. जी. दिवाण",
+          "status": "ACTIVE",
+          "match": true
+        }
+      ],
+      "configChecks": {
+        "idMatch": true,
+        "singletonKeyMatch": true,
+        "amountMatch": true,
+        "dueDayMatch": true,
+        "lateFeeEnabledMatch": true,
+        "lateFeeAmountMatch": true,
+        "financialYearStartMonthMatch": true,
+        "isConfiguredMatch": true
+      }
+    },
+    "task8": {
+      "status": "PASS",
+      "hashes": {
+        "admins": {
+          "prod": "bd91612a068e3b7095ccdb87f354f1f8bfb94bf2c77e5d6fbc2f153010a5c94d",
+          "verify": "bd91612a068e3b7095ccdb87f354f1f8bfb94bf2c77e5d6fbc2f153010a5c94d",
+          "match": true
+        },
+        "residents": {
+          "prod": "19c18f5a624cf69c2c12737a88e20c8ba6fe2232dbacde5305434a4f075c2038",
+          "verify": "19c18f5a624cf69c2c12737a88e20c8ba6fe2232dbacde5305434a4f075c2038",
+          "match": true
+        },
+        "maintenanceconfigs": {
+          "prod": "0ab0782759abc7180b05ca7e63f9ad88c3631a631607a71b5bc07e34c8283ef9",
+          "verify": "0ab0782759abc7180b05ca7e63f9ad88c3631a631607a71b5bc07e34c8283ef9",
+          "match": true
+        }
+      }
+    },
+    "task9": {
+      "status": "PASS",
+      "productionUnchanged": true,
+      "countsMatchBaseline": true,
+      "hashesMatchBaseline": true
+    }
+  },
+  "errors": [],
+  "verdict": "PASS"
+}
